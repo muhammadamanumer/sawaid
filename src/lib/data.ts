@@ -1,7 +1,6 @@
 import type { NavLink, Campaign, VolunteerPosition, FaqItem, FinancialAllocation } from './types';
 
-export const navLinks: NavLink[] = [
-  { href: '/', label: 'Home' },
+export const navLinks = [
   { href: '/campaigns', label: 'Campaigns' },
   { href: '/volunteer', label: 'Volunteer' },
   { href: '/transparency', label: 'Transparency' },

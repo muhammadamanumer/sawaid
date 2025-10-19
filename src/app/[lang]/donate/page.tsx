@@ -83,8 +83,8 @@ export default function DonatePage() {
               {predefinedAmounts.map((predefined) => (
                 <Button
                   key={predefined}
-                  variant={amount === predefined &amp;&amp; customAmount === "" ? "default" : "outline"}
-                  className={cn("p-6 text-lg", amount === predefined &amp;&amp; customAmount === "" ? "bg-primary text-primary-foreground" : "")}
+                  variant={amount === predefined && customAmount === "" ? "default" : "outline"}
+                  className={cn("p-6 text-lg", amount === predefined && customAmount === "" ? "bg-primary text-primary-foreground" : "")}
                   onClick={() => handleAmountClick(predefined)}
                 >
                   ${predefined}
@@ -130,7 +130,7 @@ export default function DonatePage() {
         </CardContent>
         <CardFooter>
           <Button size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-xl">
-            Donate ${finalAmount > 0 ? finalAmount.toLocaleString() : ''} {frequency === "monthly" &amp;&& finalAmount > 0 ? " per month" : ""}
+            Donate ${finalAmount > 0 ? finalAmount.toLocaleString() : ''} {frequency === "monthly" && finalAmount > 0 ? " per month" : ""}
           </Button>
         </CardFooter>
       </Card>
