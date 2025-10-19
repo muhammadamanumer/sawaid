@@ -1,3 +1,94 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-home",
+      "description": "A hopeful scene of community support",
+      "imageUrl": "https://images.unsplash.com/photo-1511632765486-a01980e01a18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjb21tdW5pdHklMjBzdXBwb3J0fGVufDB8fHx8MTc2MDkwMTc0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "community support"
+    },
+    {
+      "id": "campaign-food-drive",
+      "description": "Volunteers distributing food packages",
+      "imageUrl": "https://images.unsplash.com/photo-1603388656491-2494d14bd6e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmb29kJTIwZHJpdmV8ZW58MHx8fHwxNzYwODAwNTcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "food drive"
+    },
+    {
+      "id": "campaign-clean-water",
+      "description": "A new water well providing clean water to a village",
+      "imageUrl": "https://images.unsplash.com/photo-1606214554814-e8a9f97bdbb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjbGVhbiUyMHdhdGVyfGVufDB8fHx8MTc2MDgzNDgxNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "clean water"
+    },
+    {
+      "id": "campaign-education-support",
+      "description": "Children in a makeshift classroom smiling",
+      "imageUrl": "https://images.unsplash.com/photo-1610500796385-3ffc1ae2f046?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaGlsZHJlbiUyMGVkdWNhdGlvbnxlbnwwfHx8fDE3NjA4Njg5MjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "children education"
+    },
+    {
+      "id": "campaign-medical-aid",
+      "description": "A doctor attending to a patient in a field clinic",
+      "imageUrl": "https://images.unsplash.com/photo-1758691463110-697a814b2033?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtZWRpY2FsJTIwYWlkfGVufDB8fHx8MTc2MDkwMTc0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medical aid"
+    },
+    {
+      "id": "gallery-1",
+      "description": "Gallery image 1",
+      "imageUrl": "https://images.unsplash.com/photo-1509986601112-1282f65cafcc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjb21tdW5pdHklMjBwZW9wbGV8ZW58MHx8fHwxNzYwOTAxNzQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "community people"
+    },
+    {
+      "id": "gallery-2",
+      "description": "Gallery image 2",
+      "imageUrl": "https://images.unsplash.com/photo-1641569707854-c80945fb4719?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx2b2x1bnRlZXJzJTIwd29ya2luZ3xlbnwwfHx8fDE3NjA5MDE3NDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "volunteers working"
+    },
+    {
+      "id": "gallery-3",
+      "description": "Gallery image 3",
+      "imageUrl": "https://images.unsplash.com/photo-1593616469718-20c25ba3d611?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhaWQlMjBzdXBwbGllc3xlbnwwfHx8fDE3NjA5MDE3NDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "aid supplies"
+    },
+    {
+      "id": "gallery-4",
+      "description": "Gallery image 4",
+      "imageUrl": "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxoYXBweSUyMGNoaWxkcmVufGVufDB8fHx8MTc2MDg2MjA4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "happy children"
+    },
+    {
+      "id": "avatar-1",
+      "description": "Donor avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjA4MjUzNjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "avatar-2",
+      "description": "Donor avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1623605931891-d5b95ee98459?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc2MDg2MDcxNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person smiling"
+    },
+    {
+      "id": "avatar-3",
+      "description": "Donor avatar 3",
+      "imageUrl": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzYwODIxOTQxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman face"
+    },
+    {
+      "id": "transparency-report",
+      "description": "An image representing financial reports and transparency",
+      "imageUrl": "https://images.unsplash.com/photo-1730382624709-81e52dd294d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjaGFydHMlMjBncmFwaHN8ZW58MHx8fHwxNzYwODY4MjQ1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "charts graphs"
+    },
+    {
+      "id": "volunteer-hero",
+      "description": "A group of happy volunteers",
+      "imageUrl": "https://images.unsplash.com/photo-1616680214452-df6901ae5727?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx2b2x1bnRlZXJzJTIwZ3JvdXB8ZW58MHx8fHwxNzYwOTAxNzQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "volunteers group"
+    },
+    {
+      "id": "contact-hero",
+      "description": "A person on a phone providing support",
+      "imageUrl": "https://images.unsplash.com/photo-1715635845783-a184542d95e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjdXN0b21lciUyMHN1cHBvcnR8ZW58MHx8fHwxNzYwODQ1NzUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "customer support"
+    }
+  ]
 }
