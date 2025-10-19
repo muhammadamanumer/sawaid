@@ -73,6 +73,17 @@ export const useTranslation = () => {
 // A wrapper for the root layout to provide the translation context
 export function TranslationWrapper({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState(i18n.defaultLocale);
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+    const storedLang = localStorage.getItem('language') as Locale;
+    if (storedLang && i18n.locales.includes(storedLang)) {
+      setLanguage(storedLang);
+      document.documentElement.lang = storedLang;
+    }
+  }, []);
+
   const isRtl = language === 'ar';
 
   const value = useMemo(() => {
@@ -108,14 +119,10 @@ export function TranslationWrapper({ children }: { children: React.ReactNode }) 
     };
   }, [language, isRtl]);
 
-
-  useEffect(() => {
-    const storedLang = localStorage.getItem('language') as Locale;
-    if (storedLang && i18n.locales.includes(storedLang)) {
-      setLanguage(storedLang);
-      document.documentElement.lang = storedLang;
-    }
-  }, []);
+  if (!isClient) {
+    // Render nothing on the server to avoid hydration mismatch
+    return null;
+  }
 
   return (
     <TranslationContext.Provider value={value}>
