@@ -6,6 +6,10 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
+[dir="rtl"] body {
+  text-align: right;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -69,4 +73,32 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+[dir=rtl] .text-left {
+    text-align: right !important;
+}
+
+[dir=rtl] .text-right {
+    text-align: left !important;
+}
+
+[dir=rtl] .mr-2 {
+    margin-left: 0.5rem !important;
+    margin-right: 0 !important;
+}
+
+[dir=rtl] .ml-2 {
+    margin-right: 0.5rem !important;
+    margin-left: 0 !important;
+}
+
+[dir=rtl] .ml-12 {
+    margin-right: 3rem !important;
+    margin-left: 0 !important;
+}
+
+[dir=rtl] .mr-12 {
+    margin-left: 3rem !important;
+    margin-right: 0 !important;
 }

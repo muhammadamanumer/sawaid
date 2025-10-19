@@ -31,7 +31,7 @@ export const TranslationProvider = ({ children }: { children: React.ReactNode })
   useEffect(() => {
     localStorage.setItem('language', language);
     document.documentElement.lang = language;
-    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    // Removed document.documentElement.dir to control RTL styling manually
   }, [language]);
 
   const t = (key: string, params?: { [key: string]: string | number }) => {
@@ -53,7 +53,7 @@ export const TranslationProvider = ({ children }: { children: React.ReactNode })
     { href: '/volunteer', label: t('nav.volunteer') },
     { href: '/transparency', label: t('nav.transparency') },
     { href: '/contact', label: t('nav.contact') },
-  ], [language]);
+  ], [language, t]);
 
   return (
     <TranslationContext.Provider value={{ language, setLanguage, t, isRtl, navLinks }}>
@@ -72,5 +72,54 @@ export const useTranslation = () => {
 
 // A wrapper for the root layout to provide the translation context
 export function TranslationWrapper({ children }: { children: React.ReactNode }) {
-  return <TranslationProvider>{children}</TranslationProvider>;
+  const [language, setLanguage] = useState(i18n.defaultLocale);
+  const isRtl = language === 'ar';
+
+  const value = useMemo(() => {
+    const t = (key: string, params?: { [key: string]: string | number }) => {
+      const langTranslations = translations[language as Locale];
+      let translation = getDeepValue(langTranslations, key) || key;
+  
+      if (params) {
+        Object.keys(params).forEach(pKey => {
+          translation = translation.replace(`{{${pKey}}}`, String(params[pKey]));
+        });
+      }
+      return translation;
+    };
+  
+    const navLinks = [
+      { href: '/campaigns', label: t('nav.campaigns') },
+      { href: '/volunteer', label: t('nav.volunteer') },
+      { href: '/transparency', label: t('nav.transparency') },
+      { href: '/contact', label: t('nav.contact') },
+    ];
+  
+    return {
+      language: language as Locale,
+      setLanguage: (lang: Locale) => {
+        localStorage.setItem('language', lang);
+        document.documentElement.lang = lang;
+        setLanguage(lang);
+      },
+      t,
+      isRtl,
+      navLinks,
+    };
+  }, [language, isRtl]);
+
+
+  useEffect(() => {
+    const storedLang = localStorage.getItem('language') as Locale;
+    if (storedLang && i18n.locales.includes(storedLang)) {
+      setLanguage(storedLang);
+      document.documentElement.lang = storedLang;
+    }
+  }, []);
+
+  return (
+    <TranslationContext.Provider value={value}>
+        <div dir={isRtl ? "rtl" : "ltr"}>{children}</div>
+    </TranslationContext.Provider>
+  );
 }
