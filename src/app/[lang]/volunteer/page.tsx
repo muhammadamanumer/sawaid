@@ -10,6 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { volunteerPositions } from "@/lib/data";
 import { CheckCircle } from "lucide-react";
+import { i18n } from "@/i18n-config";
+
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }))
+}
 
 export default function VolunteerPage() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'volunteer-hero');

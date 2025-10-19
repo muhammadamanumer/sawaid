@@ -8,6 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { faqItems } from "@/lib/data";
 import Link from "next/link";
 import { Facebook, Twitter, Instagram } from 'lucide-react';
+import { i18n } from "@/i18n-config";
+
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }))
+}
 
 export default function ContactPage() {
   return (

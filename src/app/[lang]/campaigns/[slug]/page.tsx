@@ -14,8 +14,20 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import { i18n } from '@/i18n-config';
+import type { Locale } from '@/i18n-config';
 
-export default function CampaignDetailPage({ params }: { params: { slug: string } }) {
+export async function generateStaticParams() {
+  const paths = campaigns.flatMap(campaign => 
+    i18n.locales.map(locale => ({
+      lang: locale,
+      slug: campaign.slug
+    }))
+  );
+  return paths;
+}
+
+export default function CampaignDetailPage({ params }: { params: { slug: string, lang: Locale } }) {
   const campaign = campaigns.find((c) => c.slug === params.slug);
 
   if (!campaign) {
@@ -120,11 +132,4 @@ export default function CampaignDetailPage({ params }: { params: { slug: string 
       </div>
     </div>
   );
-}
-
-// Generate static paths for each campaign
-export async function generateStaticParams() {
-  return campaigns.map((campaign) => ({
-    slug: campaign.slug,
-  }));
 }

@@ -9,6 +9,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
+import { i18n } from "@/i18n-config";
+
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }))
+}
 
 const predefinedAmounts = [25, 50, 100, 250];
 
