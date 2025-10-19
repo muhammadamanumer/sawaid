@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Globe, Menu, X } from "lucide-react";
-import { usePathname } from 'next/navigation'
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,19 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Logo } from "@/components/shared/logo";
-import { navLinks } from "@/lib/data";
 import { i18n } from "@/i18n-config";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function Header() {
+  const { t, navLinks } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const pathname = usePathname()
-
-  const getLocalizedPath = (locale: string) => {
-    if (!pathname) return '/'
-    const segments = pathname.split('/')
-    segments[1] = locale
-    return segments.join('/')
-  }
 
   return (
     <header className="bg-primary shadow-md sticky top-0 z-50">
@@ -43,9 +35,9 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden md:flex items-center gap-4">
-          <LanguageSwitcher getLocalizedPath={getLocalizedPath} />
+          <LanguageSwitcher />
           <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link href="/donate">Donate Now</Link>
+            <Link href="/donate">{t('header.donateNow')}</Link>
           </Button>
         </div>
         <div className="md:hidden">
@@ -74,9 +66,9 @@ export function Header() {
               </Link>
             ))}
             <div className="flex items-center justify-between mt-4">
-              <LanguageSwitcher getLocalizedPath={getLocalizedPath}/>
+              <LanguageSwitcher />
               <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => setIsMenuOpen(false)}>
-                <Link href="/donate">Donate Now</Link>
+                <Link href="/donate">{t('header.donateNow')}</Link>
               </Button>
             </div>
           </nav>
@@ -86,7 +78,8 @@ export function Header() {
   );
 }
 
-function LanguageSwitcher({ getLocalizedPath }: { getLocalizedPath: (locale: string) => string }) {
+function LanguageSwitcher() {
+  const { setLanguage } = useTranslation();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -97,10 +90,8 @@ function LanguageSwitcher({ getLocalizedPath }: { getLocalizedPath: (locale: str
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {i18n.locales.map((locale) => (
-          <DropdownMenuItem key={locale} asChild>
-            <Link href={getLocalizedPath(locale)}>
-              {locale === 'en' ? 'English' : 'العربية'}
-            </Link>
+          <DropdownMenuItem key={locale} onClick={() => setLanguage(locale)}>
+             {locale === 'en' ? 'English' : 'العربية'}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

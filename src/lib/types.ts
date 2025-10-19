@@ -6,9 +6,6 @@ export type NavLink = {
 export type Campaign = {
   id: string;
   slug: string;
-  title: string;
-  shortDescription: string;
-  description: string;
   goal: number;
   currentAmount: number;
   image: string;
@@ -17,15 +14,12 @@ export type Campaign = {
 };
 
 export type VolunteerPosition = {
-  title: string;
-  description: string;
+  id: string;
   requirements: string[];
-  location: string;
 };
 
 export type FaqItem = {
-  question: string;
-  answer: string;
+  id: string;
 };
 
 export type FinancialAllocation = {

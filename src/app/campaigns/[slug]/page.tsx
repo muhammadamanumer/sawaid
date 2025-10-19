@@ -1,3 +1,5 @@
+"use client"
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { campaigns } from '@/lib/data';
@@ -14,20 +16,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { i18n } from '@/i18n-config';
-import type { Locale } from '@/i18n-config';
+import { useTranslation } from '@/hooks/use-translation';
 
-export async function generateStaticParams() {
-  const paths = campaigns.flatMap(campaign => 
-    i18n.locales.map(locale => ({
-      lang: locale,
-      slug: campaign.slug
-    }))
-  );
-  return paths;
-}
-
-export default function CampaignDetailPage({ params }: { params: { slug: string, lang: Locale } }) {
+export default function CampaignDetailPage({ params }: { params: { slug: string } }) {
+  const { t } = useTranslation();
   const campaign = campaigns.find((c) => c.slug === params.slug);
 
   if (!campaign) {
@@ -54,12 +46,12 @@ export default function CampaignDetailPage({ params }: { params: { slug: string,
                     />
                 </div>
               )}
-              <h1 className="text-4xl md:text-5xl font-headline font-bold">{campaign.title}</h1>
-              <p className="text-lg text-muted-foreground">{campaign.description}</p>
+              <h1 className="text-4xl md:text-5xl font-headline font-bold">{t(`campaigns.${campaign.slug}.title`)}</h1>
+              <p className="text-lg text-muted-foreground">{t(`campaigns.${campaign.slug}.description`)}</p>
               
               {campaign.gallery.length > 0 && (
                 <div>
-                  <h2 className="text-2xl font-headline font-semibold mb-4">Gallery</h2>
+                  <h2 className="text-2xl font-headline font-semibold mb-4">{t('campaignDetail.gallery')}</h2>
                    <Carousel className="w-full">
                     <CarouselContent className="-ml-2">
                       {campaign.gallery.map((imageId, index) => {
@@ -91,23 +83,23 @@ export default function CampaignDetailPage({ params }: { params: { slug: string,
           <div className="lg:col-span-1 space-y-8">
             <Card className="sticky top-24 shadow-lg">
               <CardHeader>
-                <CardTitle className="font-headline text-2xl">Campaign Progress</CardTitle>
+                <CardTitle className="font-headline text-2xl">{t('campaignDetail.progressTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <AnimatedProgressBar value={progress} />
                 <div className="flex justify-between text-sm">
                   <span className="font-bold text-foreground">${campaign.currentAmount.toLocaleString()}</span>
-                  <span className="text-muted-foreground">raised of ${campaign.goal.toLocaleString()}</span>
+                  <span className="text-muted-foreground">{t('campaignDetail.raisedOf')} ${campaign.goal.toLocaleString()}</span>
                 </div>
                 <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-xl">
-                  <Link href="/donate">Donate to this Campaign</Link>
+                  <Link href="/donate">{t('campaignDetail.donateButton')}</Link>
                 </Button>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline text-2xl">Recent Donors</CardTitle>
+                <CardTitle className="font-headline text-2xl">{t('campaignDetail.donorsTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {campaign.donors.map((donor, index) => {
@@ -120,7 +112,7 @@ export default function CampaignDetailPage({ params }: { params: { slug: string,
                       </Avatar>
                       <div>
                         <p className="font-semibold">{donor.name}</p>
-                        <p className="text-sm text-muted-foreground">Donated ${donor.amount}</p>
+                        <p className="text-sm text-muted-foreground">{t('campaignDetail.donated')} ${donor.amount}</p>
                       </div>
                     </div>
                   );

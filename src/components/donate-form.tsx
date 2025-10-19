@@ -9,10 +9,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
 
 const predefinedAmounts = [25, 50, 100, 250];
 
 export function DonateForm() {
+  const { t } = useTranslation();
   const [frequency, setFrequency] = useState("one-time");
   const [amount, setAmount] = useState(50);
   const [customAmount, setCustomAmount] = useState("");
@@ -37,12 +39,12 @@ export function DonateForm() {
   return (
     <Card className="w-full shadow-lg">
       <CardHeader>
-        <CardTitle className="text-2xl font-headline">Choose Your Impact</CardTitle>
-        <CardDescription>Select a donation frequency and amount.</CardDescription>
+        <CardTitle className="text-2xl font-headline">{t('donate.form.title')}</CardTitle>
+        <CardDescription>{t('donate.form.description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="space-y-4">
-          <Label className="text-lg font-semibold">Donation Frequency</Label>
+          <Label className="text-lg font-semibold">{t('donate.form.frequencyTitle')}</Label>
           <RadioGroup
             defaultValue="one-time"
             onValueChange={setFrequency}
@@ -54,7 +56,7 @@ export function DonateForm() {
                 htmlFor="one-time"
                 className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/10 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
               >
-                One-Time Donation
+                {t('donate.form.oneTime')}
               </Label>
             </div>
             <div>
@@ -64,7 +66,7 @@ export function DonateForm() {
                 className="flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/10 peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
               >
                 <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-primary" /> Monthly Giving
+                  <Heart className="h-4 w-4 text-primary" /> {t('donate.form.monthly')}
                 </div>
               </Label>
             </div>
@@ -72,7 +74,7 @@ export function DonateForm() {
         </div>
 
         <div className="space-y-4">
-          <Label className="text-lg font-semibold">Amount (USD)</Label>
+          <Label className="text-lg font-semibold">{t('donate.form.amountTitle')}</Label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {predefinedAmounts.map((predefined) => (
               <Button
@@ -89,7 +91,7 @@ export function DonateForm() {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
             <Input
               type="number"
-              placeholder="Custom Amount"
+              placeholder={t('donate.form.customAmount')}
               className="pl-7 text-lg h-auto p-3"
               value={customAmount}
               onChange={handleCustomAmountChange}
@@ -101,21 +103,21 @@ export function DonateForm() {
         <Separator />
         
         <div className="space-y-4">
-           <h3 className="text-lg font-semibold">Payment Information</h3>
-           <p className="text-sm text-muted-foreground">A secure payment form (e.g., Stripe or PayPal) would be embedded here.</p>
+           <h3 className="text-lg font-semibold">{t('donate.form.paymentTitle')}</h3>
+           <p className="text-sm text-muted-foreground">{t('donate.form.paymentDescription')}</p>
            <div className="grid gap-4">
               <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">{t('donate.form.nameLabel')}</Label>
                   <Input id="name" placeholder="Jane Doe" />
               </div>
               <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email">{t('donate.form.emailLabel')}</Label>
                   <Input id="email" type="email" placeholder="jane.doe@example.com" />
               </div>
                <div className="space-y-2">
-                  <Label>Card Details</Label>
+                  <Label>{t('donate.form.cardLabel')}</Label>
                   <div className="border rounded-md p-3 bg-muted/50 text-center text-muted-foreground h-12 flex items-center justify-center">
-                      Mock Card Element
+                      {t('donate.form.cardPlaceholder')}
                   </div>
               </div>
            </div>
@@ -124,7 +126,7 @@ export function DonateForm() {
       </CardContent>
       <CardFooter>
         <Button size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-xl">
-          Donate ${finalAmount > 0 ? finalAmount.toLocaleString() : ''} {frequency === "monthly" && finalAmount > 0 ? " per month" : ""}
+          {t('donate.form.donateButton')} ${finalAmount > 0 ? finalAmount.toLocaleString() : ''} {frequency === "monthly" && finalAmount > 0 ? t('donate.form.perMonth') : ""}
         </Button>
       </CardFooter>
     </Card>
