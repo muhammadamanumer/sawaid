@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Globe, Menu, X } from "lucide-react";
+import { usePathname } from 'next/navigation'
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,9 +14,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Logo } from "@/components/shared/logo";
 import { navLinks } from "@/lib/data";
+import { i18n } from "@/i18n-config";
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname()
+
+  const getLocalizedPath = (locale: string) => {
+    if (!pathname) return '/'
+    const segments = pathname.split('/')
+    segments[1] = locale
+    return segments.join('/')
+  }
 
   return (
     <header className="bg-primary shadow-md sticky top-0 z-50">
@@ -33,7 +43,7 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden md:flex items-center gap-4">
-          <LanguageSwitcher />
+          <LanguageSwitcher getLocalizedPath={getLocalizedPath} />
           <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <Link href="/donate">Donate Now</Link>
           </Button>
@@ -64,7 +74,7 @@ export function Header() {
               </Link>
             ))}
             <div className="flex items-center justify-between mt-4">
-              <LanguageSwitcher />
+              <LanguageSwitcher getLocalizedPath={getLocalizedPath}/>
               <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground" onClick={() => setIsMenuOpen(false)}>
                 <Link href="/donate">Donate Now</Link>
               </Button>
@@ -76,7 +86,7 @@ export function Header() {
   );
 }
 
-function LanguageSwitcher() {
+function LanguageSwitcher({ getLocalizedPath }: { getLocalizedPath: (locale: string) => string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -86,8 +96,13 @@ function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>English</DropdownMenuItem>
-        <DropdownMenuItem>العربية</DropdownMenuItem>
+        {i18n.locales.map((locale) => (
+          <DropdownMenuItem key={locale} asChild>
+            <Link href={getLocalizedPath(locale)}>
+              {locale === 'en' ? 'English' : 'العربية'}
+            </Link>
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

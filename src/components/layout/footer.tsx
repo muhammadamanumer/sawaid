@@ -62,7 +62,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/60">
-          &copy; {new Date().getFullYear()} HopeHarbor. All rights reserved.
+          &copy; {new Date().getFullYear()} Sawaid Al islah. All rights reserved.
         </div>
       </div>
     </footer>
