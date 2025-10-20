@@ -6,8 +6,16 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
 export const metadata: Metadata = {
-  title: 'Sawaid Al islah',
+  title: 'Sawaid Al Islah',
   description: 'Providing relief and hope to communities in need.',
+  icons: {
+    icon: [
+      { url: '/Logo/sawaid-logo-radius.webp', type: 'image/webp' },
+    ],
+    apple: [
+      { url: '/Logo/sawaid-logo-radius.webp', sizes: '180x180', type: 'image/webp' },
+    ],
+  },
 };
 
 export default function RootLayout({

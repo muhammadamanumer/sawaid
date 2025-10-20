@@ -19,43 +19,51 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
   const progress = (campaign.currentAmount / campaign.goal) * 100;
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-shadow hover:shadow-xl duration-300 h-full">
-      <CardHeader className="p-0">
-        <Link href={`/campaigns/${campaign.slug}`} className="relative h-48 w-full block">
+    <Card className="group flex flex-col overflow-hidden transition-all duration-500 hover:shadow-modern-2xl h-full hover:-translate-y-2 border-border/50 hover:border-primary/30">
+      <CardHeader className="p-0 relative overflow-hidden">
+        <Link href={`/campaigns/${campaign.slug}`} className="relative h-56 w-full block overflow-hidden">
           {placeholderImage && (
             <Image
               src={placeholderImage.imageUrl}
               alt={placeholderImage.description}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
               data-ai-hint={placeholderImage.imageHint}
             />
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </Link>
+        <div className="absolute top-4 right-4 bg-accent/95 backdrop-blur-sm text-accent-foreground px-4 py-2 rounded-full text-xs font-bold shadow-modern-md">
+          {Math.round(progress)}% Funded
+        </div>
       </CardHeader>
       <CardContent className="flex flex-col flex-grow p-6">
-        <CardTitle className="font-headline text-xl mb-2">
-          <Link href={`/campaigns/${campaign.slug}`} className="hover:text-primary transition-colors">
+        <CardTitle className="font-headline text-xl mb-3 leading-tight">
+          <Link href={`/campaigns/${campaign.slug}`} className="hover:text-primary transition-colors duration-300">
             {t(`campaigns.${campaign.slug}.title`)}
           </Link>
         </CardTitle>
-        <p className="text-muted-foreground text-sm flex-grow">{t(`campaigns.${campaign.slug}.shortDescription`)}</p>
-        <div className="mt-4">
+        <p className="text-muted-foreground text-sm flex-grow leading-relaxed mb-4">{t(`campaigns.${campaign.slug}.shortDescription`)}</p>
+        <div className="mt-auto space-y-3">
           <AnimatedProgressBar value={progress} />
-          <div className="mt-2 flex justify-between text-sm text-muted-foreground">
-            <span>
-              <span className="font-bold text-foreground">
+          <div className="flex justify-between text-sm">
+            <div>
+              <p className="font-bold text-lg text-foreground">
                 ${campaign.currentAmount.toLocaleString()}
-              </span> {t('campaignCard.raised')}
-            </span>
-            <span>
-              {t('campaignCard.goal')}: ${campaign.goal.toLocaleString()}
-            </span>
+              </p>
+              <p className="text-xs text-muted-foreground">{t('campaignCard.raised')}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-semibold text-muted-foreground">
+                ${campaign.goal.toLocaleString()}
+              </p>
+              <p className="text-xs text-muted-foreground">{t('campaignCard.goal')}</p>
+            </div>
           </div>
         </div>
       </CardContent>
       <CardFooter className="p-6 pt-0">
-        <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+        <Button asChild variant="accent" className="w-full group-hover:shadow-modern-lg transition-all">
           <Link href={`/campaigns/${campaign.slug}`}>{t('campaignCard.donateButton')}</Link>
         </Button>
       </CardFooter>

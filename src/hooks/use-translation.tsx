@@ -31,7 +31,7 @@ export const TranslationProvider = ({ children }: { children: React.ReactNode })
   useEffect(() => {
     localStorage.setItem('language', language);
     document.documentElement.lang = language;
-    // Removed document.documentElement.dir to control RTL styling manually
+    // Text direction is handled via CSS class, not document.dir
   }, [language]);
 
   const t = (key: string, params?: { [key: string]: string | number }) => {
@@ -49,7 +49,10 @@ export const TranslationProvider = ({ children }: { children: React.ReactNode })
   const isRtl = language === 'ar';
 
   const navLinks = useMemo(() => [
+    { href: '/about', label: t('nav.about') },
     { href: '/campaigns', label: t('nav.campaigns') },
+    { href: '/news', label: t('nav.news') },
+    { href: '/gallery', label: t('nav.gallery') },
     { href: '/volunteer', label: t('nav.volunteer') },
     { href: '/transparency', label: t('nav.transparency') },
     { href: '/contact', label: t('nav.contact') },
@@ -100,7 +103,10 @@ export function TranslationWrapper({ children }: { children: React.ReactNode }) 
     };
   
     const navLinks = [
+      { href: '/about', label: t('nav.about') },
       { href: '/campaigns', label: t('nav.campaigns') },
+      { href: '/news', label: t('nav.news') },
+      { href: '/gallery', label: t('nav.gallery') },
       { href: '/volunteer', label: t('nav.volunteer') },
       { href: '/transparency', label: t('nav.transparency') },
       { href: '/contact', label: t('nav.contact') },
@@ -126,7 +132,7 @@ export function TranslationWrapper({ children }: { children: React.ReactNode }) 
 
   return (
     <TranslationContext.Provider value={value}>
-        <div dir={isRtl ? "rtl" : "ltr"}>{children}</div>
+        <div className={isRtl ? "rtl-text" : ""}>{children}</div>
     </TranslationContext.Provider>
   );
 }

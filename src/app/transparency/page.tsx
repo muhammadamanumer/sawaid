@@ -51,33 +51,43 @@ export default function TransparencyPage() {
   const totalAmount = financialData.reduce((acc, item) => acc + item.amount, 0);
 
   return (
-    <div className="py-12 md:py-16">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl md:text-5xl font-headline font-bold">{t('transparency.title')}</h1>
-          <p className="max-w-3xl mx-auto text-lg text-muted-foreground">
+    <div className="relative min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-20 overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-primary rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse animation-delay-300"></div>
+      </div>
+      
+      <div className="relative container mx-auto px-4 md:px-6">
+        <div className="text-center space-y-6 mb-16">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-headline font-bold animate-fadeInUp bg-clip-text text-transparent bg-gradient-to-br from-primary via-primary-light to-accent leading-tight">
+            {t('transparency.title')}
+          </h1>
+          <p className="max-w-3xl mx-auto text-xl text-muted-foreground leading-relaxed animate-fadeInUp animation-delay-100">
             {t('transparency.description')}
           </p>
         </div>
         
-        <Card className="mb-8 shadow-md">
-            <CardHeader>
-                <CardTitle className="font-headline">{t('transparency.reportCardTitle')}</CardTitle>
-                <CardDescription>{t('transparency.reportCardDescription')}</CardDescription>
+        <Card className="mb-12 shadow-modern-2xl border-border/50 animate-fadeInUp animation-delay-200">
+            <CardHeader className="space-y-2">
+                <CardTitle className="text-3xl font-headline bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
+                  {t('transparency.reportCardTitle')}
+                </CardTitle>
+                <CardDescription className="text-base">{t('transparency.reportCardDescription')}</CardDescription>
             </CardHeader>
-            <CardFooter>
-                 <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                    <Download className="mr-2 h-4 w-4" />
+            <CardFooter className="pt-6">
+                 <Button variant="accent" className="h-14 px-8 text-lg shadow-modern-xl hover:shadow-modern-2xl">
+                    <Download className="mr-2 h-5 w-5" />
                     {t('transparency.reportButton')}
                 </Button>
             </CardFooter>
         </Card>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="font-headline">{t('transparency.allocationTitle')}</CardTitle>
-              <CardDescription>{t('transparency.allocationDescription')}</CardDescription>
+        <div className="grid md:grid-cols-2 gap-10 animate-fadeInUp animation-delay-300">
+          <Card className="shadow-modern-2xl border-border/50">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-2xl font-headline">{t('transparency.allocationTitle')}</CardTitle>
+              <CardDescription className="text-base">{t('transparency.allocationDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
@@ -106,10 +116,10 @@ export default function TransparencyPage() {
             </CardContent>
           </Card>
 
-          <Card className="flex flex-col shadow-md">
-            <CardHeader>
-              <CardTitle className="font-headline">{t('transparency.percentageTitle')}</CardTitle>
-              <CardDescription>{t('transparency.percentageDescription')}</CardDescription>
+          <Card className="flex flex-col shadow-modern-2xl border-border/50">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-2xl font-headline">{t('transparency.percentageTitle')}</CardTitle>
+              <CardDescription className="text-base">{t('transparency.percentageDescription')}</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex items-center justify-center pb-0">
                <ChartContainer config={chartConfig} className="mx-auto aspect-square h-full max-h-[350px]">
