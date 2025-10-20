@@ -49,13 +49,13 @@ export const TranslationProvider = ({ children }: { children: React.ReactNode })
   const isRtl = language === 'ar';
 
   const navLinks = useMemo(() => [
-    { href: '/about', label: t('nav.about') },
-    { href: '/campaigns', label: t('nav.campaigns') },
-    { href: '/news', label: t('nav.news') },
-    { href: '/gallery', label: t('nav.gallery') },
-    { href: '/volunteer', label: t('nav.volunteer') },
-    { href: '/transparency', label: t('nav.transparency') },
-    { href: '/contact', label: t('nav.contact') },
+    { href: '/', label: t('nav.about') },
+    { href: '/', label: t('nav.campaigns') },
+    { href: '/', label: t('nav.news') },
+    { href: '/', label: t('nav.gallery') },
+    { href: '/', label: t('nav.volunteer') },
+    { href: '/', label: t('nav.transparency') },
+    { href: '/', label: t('nav.contact') },
   ], [language, t]);
 
   return (
@@ -75,7 +75,7 @@ export const useTranslation = () => {
 
 // A wrapper for the root layout to provide the translation context
 export function TranslationWrapper({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState(i18n.defaultLocale);
+  const [language, setLanguage] = useState<Locale>(i18n.defaultLocale);
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
@@ -87,7 +87,7 @@ export function TranslationWrapper({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  const isRtl = language === 'ar';
+  const isRtl = language === 'ar' as Locale;
 
   const value = useMemo(() => {
     const t = (key: string, params?: { [key: string]: string | number }) => {
