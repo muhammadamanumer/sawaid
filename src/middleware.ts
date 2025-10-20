@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// This middleware is now a no-op. Language is handled client-side.
-// We keep the file to avoid breaking the build if it's referenced somewhere.
 export function middleware(request: NextRequest) {
-  return NextResponse.next()
+  const { pathname } = request.nextUrl
+  
+  // Allow access only to homepage and essential paths
+  if (pathname === '/' || pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/favicon.ico') || pathname.startsWith('/Logo')) {
+    return NextResponse.next()
+  }
+  
+  // Redirect all other pages to homepage
+  return NextResponse.redirect(new URL('/', request.url))
 }
 
 export const config = {

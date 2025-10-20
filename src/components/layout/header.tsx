@@ -32,7 +32,7 @@ export function Header() {
             const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
             return (
               <Link
-                key={link.href}
+                key={index}
                 href={link.href}
                 className={`relative text-sm font-semibold transition-all duration-300 group animate-fadeIn ${
                   isActive 
@@ -72,11 +72,11 @@ export function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-gradient-to-b from-primary to-primary-dark pb-6 shadow-modern-lg animate-fadeIn border-t border-primary-foreground/10">
           <nav className="container mx-auto flex flex-col gap-4 px-4 md:px-6 pt-4">
-            {navLinks.map((link) => {
+            {navLinks.map((link, index) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
               return (
                 <Link
-                  key={link.href}
+                  key={index}
                   href={link.href}
                   className={`text-lg font-semibold transition-all duration-300 hover:translate-x-2 py-2 border-b border-primary-foreground/10 last:border-0 ${
                     isActive 

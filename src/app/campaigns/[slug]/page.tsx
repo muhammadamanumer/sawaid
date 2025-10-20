@@ -1,5 +1,6 @@
 "use client"
 
+import { use } from 'react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { campaigns } from '@/lib/data';
@@ -18,9 +19,10 @@ import {
 } from "@/components/ui/carousel"
 import { useTranslation } from '@/hooks/use-translation';
 
-export default function CampaignDetailPage({ params }: { params: { slug: string } }) {
+export default function CampaignDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
   const { t } = useTranslation();
-  const campaign = campaigns.find((c) => c.slug === params.slug);
+  const campaign = campaigns.find((c) => c.slug === slug);
 
   if (!campaign) {
     notFound();

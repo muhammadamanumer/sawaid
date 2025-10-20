@@ -49,13 +49,13 @@ export const TranslationProvider = ({ children }: { children: React.ReactNode })
   const isRtl = language === 'ar';
 
   const navLinks = useMemo(() => [
-    { href: '/', label: t('nav.about') },
-    { href: '/', label: t('nav.campaigns') },
-    { href: '/', label: t('nav.news') },
-    { href: '/', label: t('nav.gallery') },
-    { href: '/', label: t('nav.volunteer') },
-    { href: '/', label: t('nav.transparency') },
-    { href: '/', label: t('nav.contact') },
+    { href: '#', label: t('nav.about') },
+    { href: '#', label: t('nav.campaigns') },
+    { href: '#', label: t('nav.news') },
+    { href: '#', label: t('nav.gallery') },
+    { href: '#', label: t('nav.volunteer') },
+    { href: '#', label: t('nav.transparency') },
+    { href: '#', label: t('nav.contact') },
   ], [language, t]);
 
   return (
@@ -76,10 +76,8 @@ export const useTranslation = () => {
 // A wrapper for the root layout to provide the translation context
 export function TranslationWrapper({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Locale>(i18n.defaultLocale);
-  const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
-    setIsClient(true);
     const storedLang = localStorage.getItem('language') as Locale;
     if (storedLang && i18n.locales.includes(storedLang)) {
       setLanguage(storedLang);
@@ -102,14 +100,14 @@ export function TranslationWrapper({ children }: { children: React.ReactNode }) 
       return translation;
     };
   
-    const navLinks = [
-      { href: '/about', label: t('nav.about') },
-      { href: '/campaigns', label: t('nav.campaigns') },
-      { href: '/news', label: t('nav.news') },
-      { href: '/gallery', label: t('nav.gallery') },
-      { href: '/volunteer', label: t('nav.volunteer') },
-      { href: '/transparency', label: t('nav.transparency') },
-      { href: '/contact', label: t('nav.contact') },
+    const navLinks: { href: string; label: string }[] = [
+      { href: '#', label: t('nav.about') },
+      { href: '#', label: t('nav.campaigns') },
+      { href: '#', label: t('nav.news') },
+      { href: '#', label: t('nav.gallery') },
+      { href: '#', label: t('nav.volunteer') },
+      { href: '#', label: t('nav.transparency') },
+      { href: '#', label: t('nav.contact') },
     ];
   
     return {
@@ -124,11 +122,6 @@ export function TranslationWrapper({ children }: { children: React.ReactNode }) 
       navLinks,
     };
   }, [language, isRtl]);
-
-  if (!isClient) {
-    // Render nothing on the server to avoid hydration mismatch
-    return null;
-  }
 
   return (
     <TranslationContext.Provider value={value}>

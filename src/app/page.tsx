@@ -31,7 +31,6 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
-//pushed
 export default function Home() {
   const { t } = useTranslation();
   const heroImage = PlaceHolderImages.find((p) => p.id === "hero-home");

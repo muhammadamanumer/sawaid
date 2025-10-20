@@ -30,8 +30,8 @@ export function Footer() {
                 <span className="h-0.5 w-8 bg-accent rounded-full"></span>
               </h3>
               <ul className="space-y-3">
-                {navLinks.map((link) => (
-                  <li key={link.href}>
+                {navLinks.map((link, index) => (
+                  <li key={index}>
                     <Link href={link.href} className="text-sm text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:translate-x-1 inline-block">
                       {link.label}
                     </Link>
