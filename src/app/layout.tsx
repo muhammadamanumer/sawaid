@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TranslationWrapper } from "@/hooks/use-translation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-
+//pushed
 export const metadata: Metadata = {
   title: "Sawaid Al Islah",
   description: "Providing relief and hope to communities in need.",
