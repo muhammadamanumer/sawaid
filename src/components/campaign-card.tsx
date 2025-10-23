@@ -4,10 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { Campaign } from '@/lib/types';
 import { AnimatedProgressBar } from '@/components/progress-bar';
 import { useTranslation } from '@/hooks/use-translation';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 type CampaignCardProps = {
   campaign: Campaign;
@@ -35,6 +37,20 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         </Link>
         <div className="absolute top-4 right-4 bg-accent/95 backdrop-blur-sm text-accent-foreground px-4 py-2 rounded-full text-xs font-bold shadow-modern-md">
           {Math.round(progress)}% Funded
+        </div>
+        {/* Zakat Stamp */}
+        <div className="absolute top-4 left-4">
+          {campaign.zakatSupported ? (
+            <Badge className="bg-primary/95 text-primary-foreground border-0 shadow-modern-md backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5">
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="text-xs font-semibold">{t('campaignCard.zakatSupported')}</span>
+            </Badge>
+          ) : (
+            <Badge variant="destructive" className="bg-destructive/95 backdrop-blur-sm border-0 shadow-modern-md flex items-center gap-1.5 px-3 py-1.5">
+              <XCircle className="h-4 w-4" />
+              <span className="text-xs font-semibold">{t('campaignCard.zakatNotSupported')}</span>
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent className="flex flex-col flex-grow p-6">

@@ -3,17 +3,27 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  
-  // Allow access only to homepage and essential paths
-  if (pathname === '/' || pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/favicon.ico') || pathname.startsWith('/Logo')) {
+
+  // Always allow static assets and API routes
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname === '/favicon.ico' ||
+    pathname.startsWith('/Logo')
+  ) {
     return NextResponse.next()
   }
-  
-  // Redirect all other pages to homepage
-  return NextResponse.redirect(new URL('/', request.url))
+
+  // Optional maintenance mode (set NEXT_PUBLIC_MAINTENANCE=1 to enable)
+  if (process.env.NEXT_PUBLIC_MAINTENANCE === '1') {
+    if (pathname === '/') return NextResponse.next()
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  // Allow all routes in normal mode
+  return NextResponse.next()
 }
 
 export const config = {
-  // Matcher ignoring `/_next/` and `/api/`
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }

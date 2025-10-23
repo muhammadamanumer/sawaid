@@ -9,6 +9,15 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Calendar, User, ArrowRight, TrendingUp } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 
+// Format date consistently for SSR and client
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function NewsPage() {
   const { t } = useTranslation();
 
@@ -139,7 +148,7 @@ export default function NewsPage() {
                   <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
-                      {new Date(article.date).toLocaleDateString()}
+                      {formatDate(article.date)}
                     </div>
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
@@ -195,7 +204,7 @@ export default function NewsPage() {
                 <CardHeader>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                     <Calendar className="h-3 w-3" />
-                    {new Date(article.date).toLocaleDateString()}
+                    {formatDate(article.date)}
                   </div>
                   <CardTitle className="text-lg font-headline leading-tight group-hover:text-primary transition-colors">
                     {t(`news.articles.${article.id}.title`)}

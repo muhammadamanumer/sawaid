@@ -1,6 +1,6 @@
 "use client"
 
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -97,6 +97,22 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.phoneSupportTitle')}</h3>
                     <a href="tel:+1234567890" className="text-muted-foreground text-sm hover:text-primary transition-colors">+1 (234) 567-890</a>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 bg-primary-lightest rounded-xl group-hover:scale-110 transition-transform">
+                    <MessageCircle className="h-6 w-6 text-primary flex-shrink-0" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground mb-1">{t('contact.whatsappTitle')}</h3>
+                    <a 
+                      href="https://wa.me/1234567890" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground text-sm hover:text-primary transition-colors"
+                    >
+                      +1 (234) 567-890
+                    </a>
                   </div>
                 </div>
               </div>

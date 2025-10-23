@@ -10,8 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['PT Sans', 'Cairo', 'sans-serif'],
-        headline: ['Playfair Display', 'serif'],
+        body: ['Poppins', 'Cairo', 'sans-serif'],
+        headline: ['Poppins', 'Cairo', 'sans-serif'],
+        arabic: ['Cairo', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

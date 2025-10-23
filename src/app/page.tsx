@@ -1,79 +1,94 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { CampaignCard } from "@/components/campaign-card";
-import { campaigns } from "@/lib/data";
+import { campaigns, paths } from "@/lib/data";
 import {
   ArrowRight,
   Heart,
   Users,
   TrendingUp,
-  DollarSign,
-  HandHeart,
-  Megaphone,
-  Share2,
   GraduationCap,
-  Droplets,
-  Stethoscope,
-  Clock,
-  FileText,
+  Baby,
+  Play,
   CheckCircle2,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
+
+// Hero background images for rotation
+const heroImages = [
+  PlaceHolderImages.find((p) => p.id === "hero-home"),
+  PlaceHolderImages.find((p) => p.id === "campaign-education-support"),
+  PlaceHolderImages.find((p) => p.id === "campaign-clean-water"),
+].filter(Boolean);
+
 export default function Home() {
-  const { t } = useTranslation();
-  const heroImage = PlaceHolderImages.find((p) => p.id === "hero-home");
+  const { t, language } = useTranslation();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showVideo, setShowVideo] = useState(false);
   const featuredCampaigns = campaigns.slice(0, 3);
+
+  // Rotate hero background images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        {/* Hero Section */}
+        {/* Hero Section with Rotating Backgrounds */}
         <section className="relative h-[85vh] min-h-[600px] flex items-center justify-center text-center px-4 overflow-hidden">
-          {heroImage && (
+          {/* Rotating Background Images */}
+          {heroImages.map((img, index) => (
             <Image
-              src={heroImage.imageUrl}
-              alt={heroImage.description}
+              key={index}
+              src={img?.imageUrl || ""}
+              alt={img?.description || "Hero background"}
               fill
-              className="object-cover -z-10 scale-105"
-              priority
-              data-ai-hint={heroImage.imageHint}
+              className={`object-cover transition-opacity duration-1000 ${
+                index === currentImageIndex ? "opacity-100" : "opacity-0"
+              }`}
+              priority={index === 0}
+              data-ai-hint={img?.imageHint}
             />
-          )}
+          ))}
+          
           <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-primary/40" />
 
           {/* Decorative Elements */}
-          <div className="absolute inset-0 overflow-hidden -z-10">
+          <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl animate-pulse"></div>
             <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse animation-delay-300"></div>
           </div>
 
           <div className="relative max-w-5xl mx-auto text-primary-foreground z-10">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-headline font-bold drop-shadow-2xl animate-fadeInUp leading-tight">
-              {t("home.missionTitle")}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-bold drop-shadow-2xl animate-fadeInUp leading-tight">
+              {t("home.heroTitle")}
             </h1>
-            <p className="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-primary-foreground/95 drop-shadow-lg animate-fadeInUp animation-delay-200 leading-relaxed">
-              {t("home.missionStatement")}
+            <p className="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-primary-foreground/95 drop-shadow-lg animate-fadeInUp animation-delay-200 leading-relaxed">
+              {t("home.heroSubtitle")}
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-5 justify-center animate-fadeInUp animation-delay-400">
+
+            {/* Call-to-Action Buttons */}
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp animation-delay-400">
               <Button
                 asChild
                 size="lg"
-                variant="accent"
-                className="shadow-modern-xl hover:scale-105 transition-all"
+                className="shadow-modern-xl hover:scale-105 transition-all bg-primary hover:bg-primary-dark"
               >
-                <Link href="/donate">{t("home.donateNow")}</Link>
+                <Link href="/donate">
+                  <Heart className="mr-2 h-5 w-5" />
+                  {t("home.donationFields")}
+                </Link>
               </Button>
               <Button
                 asChild
@@ -81,9 +96,34 @@ export default function Home() {
                 variant="outline"
                 className="border-2 border-primary-foreground/80 text-primary-foreground bg-transparent hover:bg-primary-foreground/20 shadow-modern-lg backdrop-blur-sm hover:scale-105 transition-all"
               >
-                <Link href="/campaigns">{t("home.learnMore")}</Link>
+                <Link href="/sponsor">
+                  <Users className="mr-2 h-5 w-5" />
+                  {t("home.registerSponsor")}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="accent"
+                className="shadow-modern-xl hover:scale-105 transition-all"
+              >
+                <Link href="/volunteer">
+                  <TrendingUp className="mr-2 h-5 w-5" />
+                  {t("home.volunteerNow")}
+                </Link>
               </Button>
             </div>
+
+            {/* Optional Video Button */}
+            <button
+              onClick={() => setShowVideo(true)}
+              className="mt-8 inline-flex items-center gap-2 text-primary-foreground/90 hover:text-primary-foreground transition-colors animate-fadeInUp animation-delay-500"
+            >
+              <div className="w-12 h-12 rounded-full bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center hover:bg-primary-foreground/30 transition-all">
+                <Play className="h-6 w-6 ml-1" />
+              </div>
+              <span className="text-sm font-medium">Watch Our Story</span>
+            </button>
           </div>
 
           {/* Scroll Indicator */}
@@ -94,22 +134,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Impact Metrics Section */}
+        {/* Achievements Section (Replaces Global Impact) */}
         <section className="relative bg-gradient-to-br from-muted via-background to-muted py-20 overflow-hidden">
           <div className="absolute inset-0 opacity-5">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full blur-3xl"></div>
           </div>
           <div className="relative container mx-auto px-4 md:px-6">
             <h2 className="text-4xl md:text-5xl font-headline font-bold text-center mb-4 animate-fadeInUp">
-              {t("home.impactTitle")}
+              {t("home.achievementsTitle")}
             </h2>
             <p className="text-center text-muted-foreground text-lg mb-12 max-w-2xl mx-auto animate-fadeInUp animation-delay-100">
-              Making a real difference in communities around the world
+              {language === 'ar' 
+                ? 'إنجازاتنا في خدمة المجتمعات حول العالم'
+                : 'Making a real difference in communities around the world'}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <div className="group p-8 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-200 hover:-translate-y-2">
-                <div className="inline-flex p-4 bg-gradient-to-br from-accent-lightest to-accent-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                  <TrendingUp className="h-12 w-12 text-accent" />
+                <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                  <TrendingUp className="h-12 w-12 text-primary" />
                 </div>
                 <p className="text-5xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
                   $1.2M+
@@ -130,8 +172,8 @@ export default function Home() {
                 </p>
               </div>
               <div className="group p-8 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-400 hover:-translate-y-2">
-                <div className="inline-flex p-4 bg-gradient-to-br from-accent-lightest to-accent-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                  <Heart className="h-12 w-12 text-accent" />
+                <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                  <Heart className="h-12 w-12 text-primary" />
                 </div>
                 <p className="text-5xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
                   5,000+
@@ -144,513 +186,258 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Urgent Appeals Section */}
-        <section className="relative py-24 bg-gradient-to-br from-destructive/5 via-background to-accent/5 overflow-hidden">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-destructive/10 text-destructive px-4 py-2 rounded-full mb-4 animate-fadeInUp">
-                <Clock className="h-5 w-5" />
-                <span className="text-sm font-semibold uppercase tracking-wide">
-                  Time Sensitive
-                </span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4 animate-fadeInUp animation-delay-100">
-                {t("home.urgentAppealsTitle")}
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
-                {t("home.urgentAppealsSubtitle")}
-              </p>
-            </div>
-            <div className="max-w-4xl mx-auto">
-              <Card className="border-destructive/20 shadow-modern-xl hover:shadow-modern-2xl transition-all duration-500 overflow-hidden group animate-fadeInUp animation-delay-300">
-                <div className="relative h-64 overflow-hidden">
-                  {campaigns[0] &&
-                    PlaceHolderImages.find(
-                      (p) => p.id === campaigns[0].image
-                    ) && (
-                      <Image
-                        src={
-                          PlaceHolderImages.find(
-                            (p) => p.id === campaigns[0].image
-                          )!.imageUrl
-                        }
-                        alt="Urgent campaign"
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    )}
-                  <div className="absolute top-4 right-4 bg-destructive text-destructive-foreground px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                    URGENT
-                  </div>
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-2xl">
-                    {t(`campaigns.${campaigns[0].slug}.title`)}
-                  </CardTitle>
-                  <CardDescription className="text-base">
-                    {t(`campaigns.${campaigns[0].slug}.description`)}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="font-semibold">
-                          ${campaigns[0].currentAmount.toLocaleString()} raised
-                        </span>
-                        <span className="text-muted-foreground">
-                          ${campaigns[0].goal.toLocaleString()} goal
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500 rounded-full"
-                          style={{
-                            width: `${Math.min(
-                              (campaigns[0].currentAmount / campaigns[0].goal) *
-                                100,
-                              100
-                            )}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <Button
-                      asChild
-                      className="w-full"
-                      size="lg"
-                      variant="default"
-                    >
-                      <Link href={`/campaigns/${campaigns[0].slug}`}>
-                        Donate Now
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
         {/* Featured Campaigns Section */}
-        <section className="relative py-24 bg-background overflow-hidden">
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent rounded-full blur-3xl"></div>
-          </div>
-          <div className="relative container mx-auto px-4 md:px-6">
+        <section className="py-20 bg-gradient-to-br from-background via-muted/30 to-background">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4 animate-fadeInUp">
                 {t("home.featuredCampaigns")}
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fadeInUp animation-delay-100">
-                Join us in making a lasting impact through these meaningful
-                initiatives
+                {language === 'ar' 
+                  ? 'ادعم حملاتنا النشطة وكن جزءًا من التغيير الإيجابي'
+                  : 'Support our active campaigns and be part of positive change'}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredCampaigns.map((campaign, index) => (
                 <div
                   key={campaign.id}
                   className="animate-fadeInUp"
-                  style={{ animationDelay: `${(index + 2) * 100}ms` }}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <CampaignCard campaign={campaign} />
                 </div>
               ))}
             </div>
-            <div className="text-center mt-16 animate-fadeInUp animation-delay-500">
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="group shadow-modern-md hover:shadow-modern-lg"
-              >
+            <div className="text-center mt-12 animate-fadeInUp animation-delay-400">
+              <Button asChild variant="outline" size="lg" className="shadow-modern-md">
                 <Link href="/campaigns">
                   {t("home.viewAllCampaigns")}
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
           </div>
         </section>
 
-        {/* Ways to Help Section */}
-        <section className="relative py-24 bg-gradient-to-br from-primary/5 via-background to-accent/5 overflow-hidden">
+        {/* Four Paths Section */}
+        <section className="py-20 bg-gradient-to-br from-muted/50 via-background to-muted/50">
           <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4 animate-fadeInUp">
-                {t("home.waysToHelpTitle")}
+                {t("home.pathsTitle")}
               </h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fadeInUp animation-delay-100">
-                {t("home.waysToHelpSubtitle")}
+                {t("home.pathsSubtitle")}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <Card className="group hover:shadow-modern-xl transition-all duration-500 hover:-translate-y-2 border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-200">
-                <CardHeader className="text-center">
-                  <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 mx-auto group-hover:scale-110 transition-transform duration-500">
-                    <DollarSign className="h-10 w-10 text-primary" />
-                  </div>
-                  <CardTitle className="text-xl">
-                    {t("home.ways.donate.title")}
-                  </CardTitle>
-                  <CardDescription className="text-sm leading-relaxed">
-                    {t("home.ways.donate.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full group/btn"
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {paths.map((path, index) => {
+                const icons = {
+                  GraduationCap,
+                  Users,
+                  Baby,
+                  Heart,
+                };
+                const Icon = icons[path.icon as keyof typeof icons];
+                
+                return (
+                  <Card
+                    key={path.id}
+                    className="group hover:shadow-modern-xl transition-all duration-300 hover:-translate-y-1 border-2 hover:border-primary/50 animate-fadeInUp overflow-hidden"
+                    style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <Link href="/donate">
-                      Donate
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                    <div className="h-2 bg-gradient-to-r from-primary via-accent to-primary-light"></div>
+                    <CardHeader>
+                      <div className="flex items-start gap-4">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                          <Icon className="h-8 w-8" />
+                        </div>
+                        <div className="flex-1">
+                          <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
+                            {t(path.titleKey)}
+                          </CardTitle>
+                          <CardDescription className="text-base">
+                            {t(path.descriptionKey)}
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                          {language === 'ar' ? 'البرامج والمشاريع' : 'Programs & Projects'}
+                        </h4>
+                        <div className="space-y-2">
+                          {path.programs.slice(0, 2).map((program) => (
+                            <div
+                              key={program.id}
+                              className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                            >
+                              <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">
+                                  {language === 'ar' ? program.titleAr : program.titleEn}
+                                </p>
+                                {program.zakatSupported && (
+                                  <Badge variant="outline" className="mt-1 bg-primary/10 text-primary border-primary text-xs">
+                                    {language === 'ar' ? '✓ زكاة' : '✓ Zakat'}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <Button asChild variant="link" className="w-full mt-2 text-primary">
+                          <Link href={`/paths/${path.slug}`}>
+                            {t('paths.viewProjects')}
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
 
-              <Card className="group hover:shadow-modern-xl transition-all duration-500 hover:-translate-y-2 border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-300">
-                <CardHeader className="text-center">
-                  <div className="inline-flex p-4 bg-gradient-to-br from-accent-lightest to-accent-lighter rounded-2xl mb-4 mx-auto group-hover:scale-110 transition-transform duration-500">
-                    <HandHeart className="h-10 w-10 text-accent" />
-                  </div>
-                  <CardTitle className="text-xl">
-                    {t("home.ways.volunteer.title")}
-                  </CardTitle>
-                  <CardDescription className="text-sm leading-relaxed">
-                    {t("home.ways.volunteer.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full group/btn"
-                  >
-                    <Link href="/volunteer">
-                      Join Us
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="group hover:shadow-modern-xl transition-all duration-500 hover:-translate-y-2 border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-400">
-                <CardHeader className="text-center">
-                  <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 mx-auto group-hover:scale-110 transition-transform duration-500">
-                    <Megaphone className="h-10 w-10 text-primary" />
-                  </div>
-                  <CardTitle className="text-xl">
-                    {t("home.ways.fundraise.title")}
-                  </CardTitle>
-                  <CardDescription className="text-sm leading-relaxed">
-                    {t("home.ways.fundraise.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full group/btn"
-                  >
-                    <Link href="/campaigns">
-                      Start Now
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="group hover:shadow-modern-xl transition-all duration-500 hover:-translate-y-2 border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-500">
-                <CardHeader className="text-center">
-                  <div className="inline-flex p-4 bg-gradient-to-br from-accent-lightest to-accent-lighter rounded-2xl mb-4 mx-auto group-hover:scale-110 transition-transform duration-500">
-                    <Share2 className="h-10 w-10 text-accent" />
-                  </div>
-                  <CardTitle className="text-xl">
-                    {t("home.ways.spread.title")}
-                  </CardTitle>
-                  <CardDescription className="text-sm leading-relaxed">
-                    {t("home.ways.spread.description")}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full group/btn"
-                  >
-                    <Link href="/about">
-                      Learn More
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+            <div className="text-center mt-12 animate-fadeInUp animation-delay-400">
+              <Button asChild size="lg" className="shadow-modern-md">
+                <Link href="/paths">
+                  {language === 'ar' ? 'اكتشف جميع المسارات' : 'Explore All Paths'}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
 
-        {/* Success Stories Section */}
-        <section className="relative py-24 bg-background overflow-hidden">
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full blur-3xl"></div>
-          </div>
-          <div className="relative container mx-auto px-4 md:px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4 animate-fadeInUp">
-                {t("home.storiesTitle")}
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fadeInUp animation-delay-100">
-                {t("home.storiesSubtitle")}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Story 1 */}
-              <Card className="group hover:shadow-modern-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden animate-fadeInUp animation-delay-200">
-                <div className="relative h-48 overflow-hidden">
-                  {PlaceHolderImages.find(
-                    (p) => p.id === "campaign-education-support"
-                  ) && (
-                    <Image
-                      src={
-                        PlaceHolderImages.find(
-                          (p) => p.id === "campaign-education-support"
-                        )!.imageUrl
-                      }
-                      alt="Education success story"
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <p className="font-bold text-lg">
-                      {t("home.stories.education.name")}
-                    </p>
-                    <p className="text-sm text-white/90">
-                      {t("home.stories.education.role")}
-                    </p>
-                  </div>
-                </div>
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-2 mb-4">
-                    <GraduationCap className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                    <p className="text-sm text-muted-foreground italic leading-relaxed">
-                      "{t("home.stories.education.quote")}"
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Story 2 */}
-              <Card className="group hover:shadow-modern-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden animate-fadeInUp animation-delay-300">
-                <div className="relative h-48 overflow-hidden">
-                  {PlaceHolderImages.find(
-                    (p) => p.id === "campaign-clean-water"
-                  ) && (
-                    <Image
-                      src={
-                        PlaceHolderImages.find(
-                          (p) => p.id === "campaign-clean-water"
-                        )!.imageUrl
-                      }
-                      alt="Water success story"
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <p className="font-bold text-lg">
-                      {t("home.stories.water.name")}
-                    </p>
-                    <p className="text-sm text-white/90">
-                      {t("home.stories.water.role")}
-                    </p>
-                  </div>
-                </div>
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-2 mb-4">
-                    <Droplets className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                    <p className="text-sm text-muted-foreground italic leading-relaxed">
-                      "{t("home.stories.water.quote")}"
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Story 3 */}
-              <Card className="group hover:shadow-modern-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden animate-fadeInUp animation-delay-400">
-                <div className="relative h-48 overflow-hidden">
-                  {PlaceHolderImages.find(
-                    (p) => p.id === "campaign-medical-aid"
-                  ) && (
-                    <Image
-                      src={
-                        PlaceHolderImages.find(
-                          (p) => p.id === "campaign-medical-aid"
-                        )!.imageUrl
-                      }
-                      alt="Medical success story"
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <p className="font-bold text-lg">
-                      {t("home.stories.medical.name")}
-                    </p>
-                    <p className="text-sm text-white/90">
-                      {t("home.stories.medical.role")}
-                    </p>
-                  </div>
-                </div>
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-2 mb-4">
-                    <Stethoscope className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                    <p className="text-sm text-muted-foreground italic leading-relaxed">
-                      "{t("home.stories.medical.quote")}"
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Transparency Section */}
-        <section className="relative py-24 bg-gradient-to-br from-muted via-background to-muted overflow-hidden">
+        {/* Quranic Verse Section */}
+        <section className="py-16 bg-gradient-to-r from-primary via-primary-dark to-primary">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="max-w-5xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6 animate-fadeInUp">
-                  <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full">
-                    <CheckCircle2 className="h-5 w-5" />
-                    <span className="text-sm font-semibold uppercase tracking-wide">
-                      100% Transparency
-                    </span>
-                  </div>
-                  <h2 className="text-4xl md:text-5xl font-headline font-bold">
-                    {t("home.transparencyTitle")}
-                  </h2>
-                  <p className="text-muted-foreground text-lg leading-relaxed">
-                    {t("home.transparencySubtitle")}
-                  </p>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <FileText className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold">
-                          Annual Financial Reports
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Detailed breakdown of all funds and expenditures
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <TrendingUp className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold">
-                          Real-Time Impact Tracking
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          See exactly how your donations create change
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <CheckCircle2 className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold">Independent Audits</p>
-                        <p className="text-sm text-muted-foreground">
-                          Third-party verification of our operations
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <Button asChild size="lg" className="mt-8">
-                    <Link href="/transparency">
-                      {t("home.viewReports")}
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                </div>
-                <div className="relative animate-fadeInUp animation-delay-200">
-                  <div className="relative h-96 rounded-2xl overflow-hidden shadow-modern-xl">
-                    {PlaceHolderImages.find(
-                      (p) => p.id === "transparency-report"
-                    ) && (
-                      <Image
-                        src={
-                          PlaceHolderImages.find(
-                            (p) => p.id === "transparency-report"
-                          )!.imageUrl
-                        }
-                        alt="Financial transparency"
-                        fill
-                        className="object-cover"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
-                  </div>
-                  <div className="absolute -bottom-6 -right-6 bg-accent text-accent-foreground p-6 rounded-xl shadow-modern-xl max-w-xs">
-                    <p className="text-4xl font-bold">85%</p>
-                    <p className="text-sm">
-                      of donations go directly to programs
-                    </p>
-                  </div>
+            <div className="max-w-4xl mx-auto text-center text-primary-foreground animate-fadeInUp">
+              <div className="mb-6">
+                <div className="inline-block p-4 bg-primary-foreground/10 rounded-full backdrop-blur-sm">
+                  <svg
+                    className="h-12 w-12 text-primary-foreground"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87-.96-7-5.54-7-10V8.3l7-3.5 7 3.5V10c0 4.46-3.13 9.04-7 10z" />
+                  </svg>
                 </div>
               </div>
+              
+              <blockquote className="text-2xl md:text-3xl lg:text-4xl font-arabic font-bold leading-relaxed mb-6">
+                {t("home.quranVerse")}
+              </blockquote>
+              
+              <p className="text-lg md:text-xl text-primary-foreground/90 font-medium">
+                {t("home.quranReference")}
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Newsletter Section */}
-        <section className="relative py-20 bg-gradient-to-br from-primary via-primary to-primary-dark overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-0 w-96 h-96 bg-accent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          </div>
-          <div className="relative container mx-auto px-4 md:px-6">
-            <div className="max-w-3xl mx-auto text-center text-primary-foreground">
-              <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4 animate-fadeInUp">
-                {t("home.newsletterTitle")}
+        {/* News & Challenges Section - Footer Area */}
+        <section className="py-20 bg-gradient-to-br from-muted via-background to-muted">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4 animate-fadeInUp">
+                {t("home.newsAndChallenges")}
               </h2>
-              <p className="text-lg mb-8 text-primary-foreground/90 animate-fadeInUp animation-delay-100">
-                {t("home.newsletterSubtitle")}
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fadeInUp animation-delay-100">
+                {language === 'ar' 
+                  ? 'آخر الأخبار والتحديات والإنجازات من مؤسستنا'
+                  : 'Latest news, challenges, and achievements from our foundation'}
               </p>
-              <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto animate-fadeInUp animation-delay-200">
-                <Input
-                  type="email"
-                  placeholder={t("home.newsletterPlaceholder")}
-                  className="flex-1 bg-white/10 border-white/20 text-primary-foreground placeholder:text-primary-foreground/60 focus:bg-white/20"
-                />
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="accent"
-                  className="shadow-modern-lg"
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* Sample News Items - Replace with dynamic content later */}
+              {[1, 2, 3].map((item, index) => (
+                <Card
+                  key={item}
+                  className="hover:shadow-modern-xl transition-all duration-300 hover:-translate-y-1 animate-fadeInUp overflow-hidden"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  {t("home.newsletterButton")}
+                  <div className="relative h-48">
+                    <Image
+                      src={PlaceHolderImages[index]?.imageUrl || ""}
+                      alt={`News ${item}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <CardHeader>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                      <span>{language === 'ar' ? 'الأخبار' : 'News'}</span>
+                      <span>•</span>
+                      <span>{language === 'ar' ? 'منذ 3 أيام' : '3 days ago'}</span>
+                    </div>
+                    <CardTitle className="text-xl line-clamp-2">
+                      {language === 'ar' 
+                        ? `إنجاز جديد في مجال ${item === 1 ? 'التعليم' : item === 2 ? 'الصحة' : 'التنمية'}`
+                        : `New Achievement in ${item === 1 ? 'Education' : item === 2 ? 'Healthcare' : 'Development'}`}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-sm line-clamp-3">
+                      {language === 'ar'
+                        ? 'نحن سعداء بالإعلان عن تحقيق إنجاز جديد في خدمة المجتمعات المحتاجة...'
+                        : 'We are excited to announce a new achievement in serving communities in need...'}
+                    </p>
+                    <Button asChild variant="link" className="mt-4 p-0 text-primary">
+                      <Link href="/news">
+                        {language === 'ar' ? 'اقرأ المزيد' : 'Read More'}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="text-center mt-12 animate-fadeInUp animation-delay-400">
+              <Button asChild variant="outline" size="lg" className="shadow-modern-md">
+                <Link href="/news">
+                  {language === 'ar' ? 'عرض جميع الأخبار' : 'View All News'}
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </form>
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
       </main>
+
+      {/* Video Popup Modal */}
+      {showVideo && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fadeIn"
+          onClick={() => setShowVideo(false)}
+        >
+          <div
+            className="relative w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowVideo(false)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+            >
+              ✕
+            </button>
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/fHnfaaUPozE"
+              title="Organization Introduction Video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

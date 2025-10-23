@@ -49,13 +49,13 @@ export const TranslationProvider = ({ children }: { children: React.ReactNode })
   const isRtl = language === 'ar';
 
   const navLinks = useMemo(() => [
-    { href: '#', label: t('nav.about') },
-    { href: '#', label: t('nav.campaigns') },
-    { href: '#', label: t('nav.news') },
-    { href: '#', label: t('nav.gallery') },
-    { href: '#', label: t('nav.volunteer') },
-    { href: '#', label: t('nav.transparency') },
-    { href: '#', label: t('nav.contact') },
+    { href: '/about', label: t('nav.about') },
+    { href: '/paths', label: t('nav.paths') },
+    { href: '/campaigns', label: t('nav.campaigns') },
+    { href: '/gallery', label: t('nav.gallery') },
+    { href: '/volunteer', label: t('nav.volunteer') },
+    { href: '/transparency', label: t('nav.transparency') },
+    { href: '/contact', label: t('nav.contact') },
   ], [language, t]);
 
   return (
@@ -101,13 +101,13 @@ export function TranslationWrapper({ children }: { children: React.ReactNode }) 
     };
   
     const navLinks: { href: string; label: string }[] = [
-      { href: '#', label: t('nav.about') },
-      { href: '#', label: t('nav.campaigns') },
-      { href: '#', label: t('nav.news') },
-      { href: '#', label: t('nav.gallery') },
-      { href: '#', label: t('nav.volunteer') },
-      { href: '#', label: t('nav.transparency') },
-      { href: '#', label: t('nav.contact') },
+      { href: '/about', label: t('nav.about') },
+      { href: '/paths', label: t('nav.paths') },
+      { href: '/campaigns', label: t('nav.campaigns') },
+      { href: '/gallery', label: t('nav.gallery') },
+      { href: '/volunteer', label: t('nav.volunteer') },
+      { href: '/transparency', label: t('nav.transparency') },
+      { href: '/contact', label: t('nav.contact') },
     ];
   
     return {

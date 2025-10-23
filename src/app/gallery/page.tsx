@@ -9,6 +9,15 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Image as ImageIcon, Video, Download, Play } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 
+// Format date consistently for SSR and client
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function GalleryPage() {
   const { t } = useTranslation();
   const [filter, setFilter] = useState("all");
@@ -220,7 +229,7 @@ export default function GalleryPage() {
                 </h3>
                 <div className="space-y-1 text-sm text-muted-foreground">
                   <p>{item.location}</p>
-                  <p>{new Date(item.date).toLocaleDateString()}</p>
+                  <p>{formatDate(item.date)}</p>
                 </div>
               </CardContent>
             </Card>

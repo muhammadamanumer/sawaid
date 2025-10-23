@@ -3,10 +3,11 @@
 @tailwind utilities;
 
 body {
-  font-family: 'PT Sans', sans-serif;
+  font-family: 'Poppins', 'Cairo', sans-serif;
 }
 
 [dir="rtl"] body {
+  font-family: 'Cairo', 'Poppins', sans-serif;
   text-align: right;
 }
 
@@ -24,12 +25,12 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     
-    /* Primary Brand Color - Teal */
-    --primary: 171 81% 33%;
-    --primary-light: 171 81% 45%;
-    --primary-lighter: 171 70% 55%;
-    --primary-lightest: 171 60% 85%;
-    --primary-dark: 171 81% 25%;
+    /* Primary Brand Color - Green (#1B7B3A) */
+    --primary: 139 64% 29%;
+    --primary-light: 139 64% 40%;
+    --primary-lighter: 139 60% 55%;
+    --primary-lightest: 139 55% 85%;
+    --primary-dark: 139 64% 20%;
     --primary-foreground: 0 0% 100%;
     
     /* Secondary Colors */
@@ -40,13 +41,13 @@ body {
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
     
-    /* Accent Brand Color - Golden */
-    --accent: 43 96% 56%;
-    --accent-light: 43 96% 65%;
-    --accent-lighter: 43 90% 75%;
-    --accent-lightest: 43 90% 90%;
-    --accent-dark: 43 96% 45%;
-    --accent-foreground: 222 47% 11%;
+    /* Accent Brand Color - Light Green */
+    --accent: 139 55% 45%;
+    --accent-light: 139 55% 60%;
+    --accent-lighter: 139 50% 75%;
+    --accent-lightest: 139 50% 90%;
+    --accent-dark: 139 60% 35%;
+    --accent-foreground: 0 0% 100%;
     
     /* Destructive Colors */
     --destructive: 0 84% 60%;
@@ -55,13 +56,13 @@ body {
     /* Border & Input */
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 171 81% 33%;
+    --ring: 139 64% 29%;
     
     /* Chart Colors */
-    --chart-1: 171 81% 33%;
-    --chart-2: 43 96% 56%;
-    --chart-3: 171 50% 50%;
-    --chart-4: 43 70% 60%;
+    --chart-1: 139 64% 29%;
+    --chart-2: 139 55% 45%;
+    --chart-3: 139 50% 50%;
+    --chart-4: 139 45% 60%;
     --chart-5: 210 40% 85%;
     
     /* Border Radius */
@@ -75,29 +76,29 @@ body {
     --card-foreground: 210 40% 98%;
     --popover: 222 47% 15%;
     --popover-foreground: 210 40% 98%;
-    --primary: 171 81% 40%;
-    --primary-light: 171 81% 50%;
-    --primary-lighter: 171 70% 60%;
-    --primary-lightest: 171 60% 30%;
-    --primary-dark: 171 81% 30%;
+    --primary: 139 64% 35%;
+    --primary-light: 139 64% 45%;
+    --primary-lighter: 139 60% 60%;
+    --primary-lightest: 139 55% 30%;
+    --primary-dark: 139 64% 25%;
     --primary-foreground: 0 0% 100%;
     --secondary: 222 47% 20%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 43 96% 56%;
-    --accent-light: 43 96% 65%;
-    --accent-lighter: 43 90% 70%;
-    --accent-lightest: 43 90% 25%;
-    --accent-dark: 43 96% 45%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 139 55% 45%;
+    --accent-light: 139 55% 60%;
+    --accent-lighter: 139 50% 70%;
+    --accent-lightest: 139 50% 25%;
+    --accent-dark: 139 60% 35%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 171 81% 40%;
-    --chart-1: 171 70% 45%;
-    --chart-2: 43 96% 60%;
+    --ring: 139 64% 35%;
+    --chart-1: 139 60% 45%;
+    --chart-2: 139 55% 55%;
     --chart-3: 171 50% 50%;
     --chart-4: 43 70% 55%;
     --chart-5: 217 33% 25%;

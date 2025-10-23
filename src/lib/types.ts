@@ -9,6 +9,7 @@ export type Campaign = {
   goal: number;
   currentAmount: number;
   image: string;
+  zakatSupported: boolean;
   gallery: string[];
   donors: { name: string; amount: number; avatar: string }[];
 };
