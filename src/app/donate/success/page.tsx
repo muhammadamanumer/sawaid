@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, Heart, Download, Loader2 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 
-export default function DonationSuccessPage() {
+function DonationSuccessContent() {
   const { t, language } = useTranslation();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -163,5 +163,22 @@ export default function DonationSuccessPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function DonationSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="relative min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-20 flex items-center justify-center">
+        <Card className="shadow-modern-2xl border-border/50 text-center max-w-md mx-4">
+          <CardContent className="pt-12 pb-8">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+            <p className="mt-4 text-muted-foreground">Loading...</p>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <DonationSuccessContent />
+    </Suspense>
   );
 }
