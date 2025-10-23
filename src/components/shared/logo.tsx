@@ -6,7 +6,7 @@ export function Logo() {
     <Link href="/" className="flex items-center gap-3 group" aria-label="Sawaid Al Islah Homepage">
       <div className="relative h-12 w-12 flex-shrink-0">
         <Image
-          src="/Logo/sawaid-logo-radius.webp"
+          src="/Logo/sawaid.png"
           alt="Sawaid Al Islah Logo"
           fill
           className="object-contain drop-shadow-md"

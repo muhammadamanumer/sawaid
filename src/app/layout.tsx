@@ -9,12 +9,12 @@ export const metadata: Metadata = {
   title: "Sawaid Al Islah",
   description: "Providing relief and hope to communities in need.",
   icons: {
-    icon: [{ url: "/Logo/sawaid-logo-radius.webp", type: "image/webp" }],
+    icon: [{ url: "/Logo/sawaid.png", type: "image/png" }],
     apple: [
       {
-        url: "/Logo/sawaid-logo-radius.webp",
+        url: "/Logo/sawaid.png",
         sizes: "180x180",
-        type: "image/webp",
+        type: "image/png",
       },
     ],
   },
