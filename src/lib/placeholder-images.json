@@ -89,6 +89,60 @@
       "description": "A person on a phone providing support",
       "imageUrl": "https://images.unsplash.com/photo-1715635845783-a184542d95e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjdXN0b21lciUyMHN1cHBvcnR8ZW58MHx8fHwxNzYwODQ1NzUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "customer support"
+    },
+    {
+      "id": "path-education-empowerment",
+      "description": "Students learning and empowered through education",
+      "imageUrl": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxlZHVjYXRpb24lMjBlbXBvd2VybWVudHxlbnwwfHx8fDE3NjA5MDE3NDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "education empowerment"
+    },
+    {
+      "id": "path-sponsoring-reformers",
+      "description": "Community leaders and reformers working together",
+      "imageUrl": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjb21tdW5pdHklMjBsZWFkZXJzfGVufDB8fHx8MTc2MDkwMTc0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "community leaders"
+    },
+    {
+      "id": "path-educational-nurseries",
+      "description": "Young children in early childhood education program",
+      "imageUrl": "https://images.unsplash.com/photo-1587654780291-39c9404d746b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxraW5kZXJnYXJ0ZW58ZW58MHx8fHwxNzYwODkyMzU0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "kindergarten"
+    },
+    {
+      "id": "path-general-reform-programs",
+      "description": "Community development and reform initiatives",
+      "imageUrl": "https://images.unsplash.com/photo-1559027615-cd4628902d4a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjb21tdW5pdHklMjBkZXZlbG9wbWVudHxlbnwwfHx8fDE3NjA5MDE3NDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "community development"
+    },
+    {
+      "id": "program-scholarship-program",
+      "description": "Students receiving scholarships for education",
+      "imageUrl": "https://images.unsplash.com/photo-1509062522246-3755977927d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzY2hvbGFyc2hpcHxlbnwwfHx8fDE3NjA4NjA3MTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "scholarship"
+    },
+    {
+      "id": "program-skills-training",
+      "description": "Vocational training and skills development",
+      "imageUrl": "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx2b2NhdGlvbmFsJTIwdHJhaW5pbmd8ZW58MHx8fHwxNzYwOTAxNzQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vocational training"
+    },
+    {
+      "id": "program-community-leaders",
+      "description": "Empowering community leaders and reformers",
+      "imageUrl": "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsZWFkZXJzaGlwJTIwdHJhaW5pbmd8ZW58MHx8fHwxNzYwOTAxNzQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leadership training"
+    },
+    {
+      "id": "program-early-childhood-education",
+      "description": "Early childhood education and nursery programs",
+      "imageUrl": "https://images.unsplash.com/photo-1516627145497-ae6968895b74?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGlsZHJlbiUyMGxlYXJuaW5nfGVufDB8fHx8MTc2MDkwMTc0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "children learning"
+    },
+    {
+      "id": "program-community-development",
+      "description": "Sustainable community development programs",
+      "imageUrl": "https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjb21tdW5pdHklMjBwcm9ncmFtfGVufDB8fHx8MTc2MDkwMTc0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "community program"
     }
   ]
 }

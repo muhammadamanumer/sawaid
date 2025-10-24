@@ -90,8 +90,8 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ slug:
               <CardContent className="space-y-4">
                 <AnimatedProgressBar value={progress} />
                 <div className="flex justify-between text-sm">
-                  <span className="font-bold text-foreground">${campaign.currentAmount.toLocaleString()}</span>
-                  <span className="text-muted-foreground">{t('campaignDetail.raisedOf')} ${campaign.goal.toLocaleString()}</span>
+                  <span className="font-bold text-foreground">QAR {campaign.currentAmount.toLocaleString()}</span>
+                  <span className="text-muted-foreground">{t('campaignDetail.raisedOf')} QAR {campaign.goal.toLocaleString()}</span>
                 </div>
                 <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-xl">
                   <Link href="/donate">{t('campaignDetail.donateButton')}</Link>
@@ -114,7 +114,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ slug:
                       </Avatar>
                       <div>
                         <p className="font-semibold">{donor.name}</p>
-                        <p className="text-sm text-muted-foreground">{t('campaignDetail.donated')} ${donor.amount}</p>
+                        <p className="text-sm text-muted-foreground">{t('campaignDetail.donated')} QAR {donor.amount}</p>
                       </div>
                     </div>
                   );

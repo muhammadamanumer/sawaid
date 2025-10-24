@@ -166,16 +166,16 @@ export default function SponsorPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="amount">
-                      {language === 'ar' ? 'المبلغ الشهري (دولار أمريكي)' : 'Monthly Amount (USD)'}
+                      {language === 'ar' ? 'المبلغ الشهري (ريال قطري)' : 'Monthly Amount (QAR)'}
                     </Label>
                     <Select>
                       <SelectTrigger>
                         <SelectValue placeholder={language === 'ar' ? 'اختر المبلغ' : 'Select amount'} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="50">$50 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
-                        <SelectItem value="100">$100 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
-                        <SelectItem value="200">$200 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
+                        <SelectItem value="200">QAR 200 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
+                        <SelectItem value="400">QAR 400 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
+                        <SelectItem value="800">QAR 800 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
                         <SelectItem value="custom">{language === 'ar' ? 'مبلغ مخصص' : 'Custom Amount'}</SelectItem>
                       </SelectContent>
                     </Select>

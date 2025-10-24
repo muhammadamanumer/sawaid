@@ -226,13 +226,13 @@ export default function AboutPage() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="p-6 bg-muted/50 rounded-xl">
                   <h4 className="font-bold mb-2">{t('about.legal.registration')}</h4>
-                  <p className="text-sm text-muted-foreground">501(c)(3) Non-Profit Organization</p>
-                  <p className="text-sm text-muted-foreground mt-1">EIN: XX-XXXXXXX</p>
+                  <p className="text-sm text-muted-foreground">Registered Non-Profit Organization</p>
+                  <p className="text-sm text-muted-foreground mt-1">Qatar</p>
                 </div>
                 <div className="p-6 bg-muted/50 rounded-xl">
                   <h4 className="font-bold mb-2">{t('about.legal.location')}</h4>
-                  <p className="text-sm text-muted-foreground">Headquarters: United States</p>
-                  <p className="text-sm text-muted-foreground mt-1">Global Operations</p>
+                  <p className="text-sm text-muted-foreground">Headquarters: Doha, Qatar</p>
+                  <p className="text-sm text-muted-foreground mt-1">International Operations</p>
                 </div>
               </div>
               <div className="text-center pt-4">

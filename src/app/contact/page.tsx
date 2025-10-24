@@ -78,7 +78,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.hqTitle')}</h3>
-                    <p className="text-muted-foreground text-sm">123 Hope Street, Unity City, 10001, World</p>
+                    <p className="text-muted-foreground text-sm">Doha, State of Qatar</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 group">
@@ -87,7 +87,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.emailSupportTitle')}</h3>
-                    <a href="mailto:support@hopeharbor.org" className="text-muted-foreground text-sm hover:text-primary transition-colors">support@hopeharbor.org</a>
+                    <a href="mailto:info@sawaedalisla.org" className="text-muted-foreground text-sm hover:text-primary transition-colors">info@sawaedalisla.org</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 group">
@@ -96,7 +96,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.phoneSupportTitle')}</h3>
-                    <a href="tel:+1234567890" className="text-muted-foreground text-sm hover:text-primary transition-colors">+1 (234) 567-890</a>
+                    <a href="tel:+97444123456" className="text-muted-foreground text-sm hover:text-primary transition-colors" dir="ltr">+974 4412 3456</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 group">
@@ -106,12 +106,13 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.whatsappTitle')}</h3>
                     <a 
-                      href="https://wa.me/1234567890" 
+                      href="https://wa.me/97444123456" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-muted-foreground text-sm hover:text-primary transition-colors"
+                      dir="ltr"
                     >
-                      +1 (234) 567-890
+                      +974 4412 3456
                     </a>
                   </div>
                 </div>

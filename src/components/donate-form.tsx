@@ -17,14 +17,14 @@ import { getStripe } from "@/lib/stripe";
 import { DonationFormData } from "@/lib/stripe-types";
 import { campaigns } from "@/lib/data";
 
-const predefinedAmounts = [25, 50, 100, 250];
+const predefinedAmounts = [100, 200, 500, 1000];
 
 export function DonateForm() {
   const { t, language } = useTranslation();
   const [frequency, setFrequency] = useState<"one-time" | "monthly">("one-time");
-  const [amount, setAmount] = useState(50);
+  const [amount, setAmount] = useState(200);
   const [customAmount, setCustomAmount] = useState("");
-  const [currency, setCurrency] = useState<"usd" | "eur" | "gbp">("usd");
+  const [currency, setCurrency] = useState<"qar" | "usd" | "eur" | "gbp">("qar");
   const [campaignId, setCampaignId] = useState<string>("general");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -199,6 +199,7 @@ export function DonateForm() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="qar">QAR (﷼) - Qatari Riyal</SelectItem>
               <SelectItem value="usd">USD ($) - US Dollar</SelectItem>
               <SelectItem value="eur">EUR (€) - Euro</SelectItem>
               <SelectItem value="gbp">GBP (£) - British Pound</SelectItem>

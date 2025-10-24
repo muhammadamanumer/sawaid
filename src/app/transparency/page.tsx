@@ -22,7 +22,7 @@ import { useTranslation } from "@/hooks/use-translation";
 
 const chartConfig = {
   amount: {
-    label: "Amount (USD)",
+    label: "Amount (QAR)",
   },
   "Food & Water Programs": {
     label: "Food & Water",

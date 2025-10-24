@@ -65,13 +65,13 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           <div className="flex justify-between text-sm">
             <div>
               <p className="font-bold text-lg text-foreground">
-                ${campaign.currentAmount.toLocaleString()}
+                QAR {campaign.currentAmount.toLocaleString()}
               </p>
               <p className="text-xs text-muted-foreground">{t('campaignCard.raised')}</p>
             </div>
             <div className="text-right">
               <p className="font-semibold text-muted-foreground">
-                ${campaign.goal.toLocaleString()}
+                QAR {campaign.goal.toLocaleString()}
               </p>
               <p className="text-xs text-muted-foreground">{t('campaignCard.goal')}</p>
             </div>

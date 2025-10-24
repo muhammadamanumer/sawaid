@@ -1,6 +1,6 @@
 export interface DonationFormData {
   amount: number;
-  currency: 'usd' | 'eur' | 'gbp';
+  currency: 'qar' | 'usd' | 'eur' | 'gbp';
   donationType: 'one-time' | 'monthly';
   firstName: string;
   lastName: string;

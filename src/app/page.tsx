@@ -154,7 +154,7 @@ export default function Home() {
                   <TrendingUp className="h-12 w-12 text-primary" />
                 </div>
                 <p className="text-5xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
-                  $1.2M+
+                  QAR 4.5M+
                 </p>
                 <p className="text-muted-foreground mt-3 font-medium">
                   {t("home.fundsRaised")}
