@@ -1,25 +1,27 @@
 import { Client, Databases, Storage, Query, ID, TablesDB } from 'appwrite';
 
-// Environment variables
+// Server-side Appwrite client (uses API key for full read access)
 const ENDPOINT = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1';
 const PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!;
+const API_KEY = process.env.APPWRITE_API_KEY!;
+export const DATABASE_ID = 'sawaid_db_test';
 
-
-export const DATABASE_ID = '694833c6000376aef6f7';
 
 // Collection IDs
 export const COLLECTIONS = {
-    CONTACT_MESSAGES: 'contact_us',
-    VOLUNTEERS: 'volunteers',
-    // -----
-    PATHS: 'paths',
-    PROGRAMS: 'programs',
     CAMPAIGNS: 'campaigns',
+    CONTACT: 'contact_submissions',
     DONATIONS: 'donations',
-    VOLUNTEER_POSITIONS: 'volunteer_positions',
-    MEDIA_ASSETS: 'media_assets',
+    MEDIA: 'media_assets',
+    PATHS: 'paths',
     POSTS: 'posts',
+    PROGRAMS: 'programs',
+    REPORTS: 'reports',
+    SPONSORS: 'sponsors',
+    VOLUNTEERS: 'volunteers',
+    VOLUNTEER_POSITIONS: 'volunteer_positions',
 } as const;
+
 
 // Bucket IDs
 export const BUCKETS = {

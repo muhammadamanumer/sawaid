@@ -67,7 +67,7 @@ async function addMissingAttributes() {
 
     const campaignAttrs = [
         { key: 'is_urgent', fn: () => databases.createBooleanAttribute(DATABASE_ID, 'campaigns', 'is_urgent', true, false) },
-        { key: 'zakat_supported', fn: () => databases.createBooleanAttribute(DATABASE_ID, 'campaigns', 'zakat_supported', true, false) },
+        { key: 'zakatSupported', fn: () => databases.createBooleanAttribute(DATABASE_ID, 'campaigns', 'zakatSupported', true, false) },
         { key: 'is_featured', fn: () => databases.createBooleanAttribute(DATABASE_ID, 'campaigns', 'is_featured', true, false) },
         { key: 'status', fn: () => databases.createEnumAttribute(DATABASE_ID, 'campaigns', 'status', ['active', 'completed', 'cancelled'], true, 'active') },
     ];
@@ -91,7 +91,7 @@ async function addMissingAttributes() {
     console.log('Existing attributes:', Array.from(progKeys));
 
     const programAttrs = [
-        { key: 'zakat_supported', fn: () => databases.createBooleanAttribute(DATABASE_ID, 'programs', 'zakat_supported', true, false) },
+        { key: 'zakatSupported', fn: () => databases.createBooleanAttribute(DATABASE_ID, 'programs', 'zakatSupported', true, false) },
         { key: 'status', fn: () => databases.createEnumAttribute(DATABASE_ID, 'programs', 'status', ['draft', 'published', 'archived'], true, 'published') },
     ];
 

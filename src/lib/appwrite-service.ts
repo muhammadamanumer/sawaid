@@ -13,7 +13,7 @@ import type {
 const ENDPOINT = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1';
 const PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!;
 const API_KEY = process.env.APPWRITE_API_KEY!;
-const DATABASE_ID = 'sawaed_core';
+const DATABASE_ID = 'sawaid_db_test';
 
 const client = new Client()
     .setEndpoint(ENDPOINT)
@@ -24,11 +24,17 @@ const databases = new Databases(client);
 
 // Collection IDs
 const COLLECTIONS = {
-    PATHS: 'paths',
-    PROGRAMS: 'programs',
     CAMPAIGNS: 'campaigns',
-    VOLUNTEER_POSITIONS: 'volunteer_positions',
+    CONTACT: 'contact_submissions',
+    DONATIONS: 'donations',
+    MEDIA: 'media_assets',
+    PATHS: 'paths',
     POSTS: 'posts',
+    PROGRAMS: 'programs',
+    REPORTS: 'reports',
+    SPONSORS: 'sponsors',
+    VOLUNTEERS: 'volunteers',
+    VOLUNTEER_POSITIONS: 'volunteer_positions',
 } as const;
 
 // ============ PATHS ============

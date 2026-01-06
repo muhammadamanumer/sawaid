@@ -536,7 +536,7 @@ CREATE TABLE paths (
   slug TEXT UNIQUE NOT NULL,
   title_en TEXT NOT NULL,
   title_ar TEXT NOT NULL,
-  description_en TEXT,
+  descriptionEn TEXT,
   description_ar TEXT,
   icon TEXT NOT NULL DEFAULT 'Heart',
   order_priority INTEGER NOT NULL DEFAULT 0,
@@ -554,17 +554,17 @@ CREATE INDEX idx_paths_order ON paths(order_priority);
 ```sql
 CREATE TABLE programs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  path_id UUID REFERENCES paths(id) ON DELETE CASCADE,
+  pathId UUID REFERENCES paths(id) ON DELETE CASCADE,
   slug TEXT UNIQUE NOT NULL,
   title_en TEXT NOT NULL,
   title_ar TEXT NOT NULL,
   summary_en TEXT,
   summary_ar TEXT,
-  description_en TEXT, -- rich text/HTML
+  descriptionEn TEXT, -- rich text/HTML
   description_ar TEXT, -- rich text/HTML
   cover_image_url TEXT,
   gallery_images TEXT[], -- array of URLs
-  zakat_supported BOOLEAN NOT NULL DEFAULT false,
+  zakatSupported BOOLEAN NOT NULL DEFAULT false,
   status TEXT NOT NULL DEFAULT 'draft', -- draft|published|archived
   target_amount NUMERIC(12,2),
   current_amount NUMERIC(12,2) DEFAULT 0,
@@ -575,9 +575,9 @@ CREATE TABLE programs (
   created_by UUID REFERENCES admin_users(id)
 );
 
-CREATE INDEX idx_programs_path ON programs(path_id);
+CREATE INDEX idx_programs_path ON programs(pathId);
 CREATE INDEX idx_programs_status ON programs(status);
-CREATE INDEX idx_programs_zakat ON programs(zakat_supported);
+CREATE INDEX idx_programs_zakat ON programs(zakatSupported);
 ```
 
 #### 3. **campaigns**
@@ -588,13 +588,13 @@ CREATE TABLE campaigns (
   slug TEXT UNIQUE NOT NULL,
   title_en TEXT NOT NULL,
   title_ar TEXT NOT NULL,
-  description_en TEXT, -- rich text
+  descriptionEn TEXT, -- rich text
   description_ar TEXT, -- rich text
   goal_amount NUMERIC(12,2) NOT NULL,
   raised_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
   currency TEXT NOT NULL DEFAULT 'qar', -- qar|usd|eur|gbp
   urgent BOOLEAN NOT NULL DEFAULT false,
-  zakat_supported BOOLEAN NOT NULL DEFAULT false,
+  zakatSupported BOOLEAN NOT NULL DEFAULT false,
   featured BOOLEAN NOT NULL DEFAULT false,
   cover_image_url TEXT,
   gallery_images TEXT[],
@@ -609,7 +609,7 @@ CREATE TABLE campaigns (
 CREATE INDEX idx_campaigns_status ON campaigns(status);
 CREATE INDEX idx_campaigns_featured ON campaigns(featured);
 CREATE INDEX idx_campaigns_urgent ON campaigns(urgent);
-CREATE INDEX idx_campaigns_zakat ON campaigns(zakat_supported);
+CREATE INDEX idx_campaigns_zakat ON campaigns(zakatSupported);
 ```
 
 #### 4. **donations**
@@ -671,7 +671,7 @@ CREATE TABLE volunteer_positions (
   slug TEXT UNIQUE NOT NULL,
   title_en TEXT NOT NULL,
   title_ar TEXT NOT NULL,
-  description_en TEXT,
+  descriptionEn TEXT,
   description_ar TEXT,
   requirements_en TEXT[], -- array of requirement strings
   requirements_ar TEXT[],
@@ -705,7 +705,7 @@ CREATE TABLE posts (
   status TEXT NOT NULL DEFAULT 'draft', -- draft|published|archived
   seo_title_en TEXT,
   seo_title_ar TEXT,
-  seo_description_en TEXT,
+  seo_descriptionEn TEXT,
   seo_description_ar TEXT,
   view_count INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -726,7 +726,7 @@ CREATE TABLE media_assets (
   type TEXT NOT NULL, -- image|video
   title_en TEXT,
   title_ar TEXT,
-  description_en TEXT,
+  descriptionEn TEXT,
   description_ar TEXT,
   url TEXT NOT NULL,
   thumbnail_url TEXT,
@@ -758,7 +758,7 @@ CREATE TABLE reports (
   quarter INTEGER, -- 1|2|3|4 or NULL for annual
   title_en TEXT NOT NULL,
   title_ar TEXT NOT NULL,
-  description_en TEXT,
+  descriptionEn TEXT,
   description_ar TEXT,
   pdf_url TEXT NOT NULL,
   report_type TEXT NOT NULL, -- annual|quarterly|special

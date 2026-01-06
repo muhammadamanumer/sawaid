@@ -23,8 +23,8 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
   const { t, language } = useTranslation();
 
   // Safe access to numeric values with defaults
-  const goalAmount = campaign.goal_amount ?? 0;
-  const raisedAmount = campaign.raised_amount ?? 0;
+  const goalAmount = campaign.goalAmount ?? 0;
+  const raisedAmount = campaign.raisedAmount ?? 0;
   const currency = campaign.currency ?? 'QAR';
 
   const progress = goalAmount > 0
@@ -32,12 +32,11 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
     : 0;
 
   // Use bilingual title based on current language
-  const title = language === 'ar' ? campaign.title_ar : campaign.title_en;
-  const description = language === 'ar' ? campaign.description_ar : campaign.description_en;
+  const title = language === 'ar' ? campaign.titleAr : campaign.titleEn;
+  const description = language === 'ar' ? campaign.descriptionAr : campaign.descriptionEn;
 
   // Use cover image from Appwrite or fallback
-  const coverImage = campaign.cover_image_url || DEFAULT_COVER;
-
+  const coverImage = campaign.coverImageUrl || DEFAULT_COVER;
   return (
     <Card className="group flex flex-col overflow-hidden transition-all duration-500 hover:shadow-modern-2xl h-full hover:-translate-y-2 border-border/50 hover:border-primary/30">
       <CardHeader className="p-0 relative overflow-hidden">
@@ -59,7 +58,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         
         {/* Zakat Stamp */}
         <div className="absolute top-4 left-4">
-          {campaign.zakat_supported ? (
+          {campaign.zakatSupported ? (
             <Badge className="bg-primary/95 text-primary-foreground border-0 shadow-modern-md backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5">
               <CheckCircle2 className="h-4 w-4" />
               <span className="text-xs font-semibold">{t('campaignCard.zakatSupported')}</span>
@@ -72,7 +71,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           )}
         </div>
         {/* Urgent Badge */}
-        {campaign.is_urgent && (
+        {campaign.isUrgent && (
           <div className="absolute bottom-4 left-4">
             <Badge variant="destructive" className="animate-pulse">
               {language === 'ar' ? '🔥 عاجل' : '🔥 Urgent'}

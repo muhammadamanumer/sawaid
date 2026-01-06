@@ -1,120 +1,170 @@
 import { Models } from 'appwrite';
 
 // Base document type from Appwrite
-type AppwriteDocument = Models.Document;
+export type AppwriteDocument = Models.Document;
 
-// Path Collection
-export interface PathDocument extends AppwriteDocument {
-    slug: string;
-    title_en: string;
-    title_ar: string;
-    description_en: string | null;
-    description_ar: string | null;
-    icon: string;
-    order_priority: number;
-    status: 'active' | 'inactive';
-}
-
-// Program Collection
-export interface ProgramDocument extends AppwriteDocument {
-    slug: string;
-    title_en: string;
-    title_ar: string;
-    summary_en: string | null;
-    summary_ar: string | null;
-    description_en: string | null;
-    description_ar: string | null;
-    cover_image_url: string | null;
-    gallery_images: string[] | null;
-    zakat_supported: boolean;
-    status: 'draft' | 'published' | 'archived';
-    target_amount: number | null;
-    current_amount: number | null;
-    start_date: string | null;
-    end_date: string | null;
-    path_id: string | null;
-}
-
-// Campaign Collection
-export interface CampaignDocument extends AppwriteDocument {
-    slug: string;
-    title_en: string;
-    title_ar: string;
-    description_en: string | null;
-    description_ar: string | null;
-    goal_amount: number;
-    raised_amount: number;
-    currency: string;
-    is_urgent: boolean;
-    zakat_supported: boolean;
-    is_featured: boolean;
-    cover_image_url: string | null;
-    gallery_images: string[] | null;
-    status: 'active' | 'completed' | 'cancelled';
-    program_id: string | null;
-}
-
-// Donation Collection
-export interface DonationDocument extends AppwriteDocument {
-    donor_first_name: string;
-    donor_last_name: string;
-    donor_email: string;
-    donor_phone: string | null;
-    amount: number;
-    currency: string;
-    donation_type: 'onetime' | 'monthly';
-    zakat_eligible: boolean;
-    is_anonymous: boolean;
-    message: string | null;
-    stripe_payment_intent_id: string | null;
-    stripe_session_id: string | null;
-    payment_status: string;
-    receipt_sent: boolean;
-    campaign_id: string | null;
-}
-
-// Volunteer Collection
-export interface VolunteerDocument extends AppwriteDocument {
-    full_name: string;
-    email: string;
-    phone: string | null;
-    message: string | null;
-    cv_url: string | null;
-    status: string;
-    position_id: string | null;
-}
 
 // Volunteer Position Collection
+
 export interface VolunteerPositionDocument extends AppwriteDocument {
     slug: string;
-    title_en: string;
-    title_ar: string;
+    titleEn: string;
+    titleAr: string;
     type: 'remote' | 'onsite' | 'hybrid';
     status: 'active' | 'inactive';
 }
 
-// Media Asset Collection
+// 1. Path Collection
+export interface PathDocument extends AppwriteDocument {
+    slug: string;
+    titleEn: string;
+    titleAr: string;
+    descriptionEn: string | null;
+    descriptionAr: string | null;
+    icon: string;
+    coverImageUrl: string | null;
+    displayOrder: number; // Renamed from order_priority
+    isActive: boolean;    // Changed from status string to boolean
+}
+
+// 2. Program Collection
+export interface ProgramDocument extends AppwriteDocument {
+    pathId: string;
+    slug: string;
+    titleEn: string;
+    titleAr: string;
+    summaryEn: string | null;
+    summaryAr: string | null;
+    descriptionEn: string | null;
+    descriptionAr: string | null;
+    coverImageUrl: string | null;
+    zakatSupported: boolean;
+    displayOrder: number;
+    isActive: boolean; // Changed from status string to boolean
+}
+
+// 3. Campaign Collection
+export interface CampaignDocument extends AppwriteDocument {
+    programId: string | null;
+    slug: string;
+    titleEn: string;
+    titleAr: string;
+    summaryEn: string | null;
+    summaryAr: string | null;
+    descriptionEn: string | null;
+    descriptionAr: string | null;
+    goalAmount: number;
+    raisedAmount: number;
+    currency: string;
+    isUrgent: boolean;
+    zakatSupported: boolean;
+    isFeatured: boolean;
+    isActive: boolean;
+    coverImageUrl: string | null;
+    galleryUrls: string[]; // Appwrite stores arrays as strings
+    startDate: string | null; // ISO Date string
+    endDate: string | null;   // ISO Date string
+}
+
+// 4. Donation Collection
+export interface DonationDocument extends AppwriteDocument {
+    campaignId: string | null;
+    programId: string | null;
+    amount: number;
+    currency: string;
+    donorName: string | null;  // Combined first/last name
+    donorEmail: string | null;
+    isAnonymous: boolean;
+    isRecurring: boolean;
+    paymentRef: string | null; // Replaces stripe_payment_intent_id
+    status: 'pending' | 'completed' | 'failed' | 'refunded';
+    donationType: 'general' | 'zakat' | 'sadaqah' | string;
+    message: string | null;
+}
+
+// 5. Volunteer Collection
+export interface VolunteerDocument extends AppwriteDocument {
+    fullName: string;
+    email: string;
+    phone: string | null;
+    positionId: string | null;
+    skills: string[]; 
+    availability: string | null;
+    message: string | null;
+    status: 'new' | 'reviewed' | 'accepted' | 'rejected';
+}
+
+// 6. Media Asset Collection
 export interface MediaAssetDocument extends AppwriteDocument {
     type: 'image' | 'video';
     url: string;
-    title_en: string | null;
-    title_ar: string | null;
+    thumbnailUrl: string | null;
+    titleEn: string | null;
+    titleAr: string | null;
+    altText: string | null;
+    tags: string[];
+    campaignId: string | null;
+    displayOrder: number;
 }
 
-// Contact Message Collection
-export interface ContactMessageDocument extends AppwriteDocument {
+// 7. Post Collection (News/Updates)
+export interface PostDocument extends AppwriteDocument {
+    slug: string;
+    titleEn: string;
+    titleAr: string;
+    excerptEn: string | null;
+    excerptAr: string | null;
+    contentEn: string | null;
+    contentAr: string | null;
+    coverImageUrl: string | null;
+    category: string;
+    authorName: string | null;
+    publishedAt: string | null;
+    isPublished: boolean;
+}
+
+// 8. Contact Message Collection
+export interface ContactSubmissionDocument extends AppwriteDocument {
     name: string;
     email: string;
-    subject: string;
+    phone: string | null;
+    subject: string | null;
     message: string;
+    status: 'new' | 'read' | 'replied' | 'archived';
+}
+
+// 9. Report Collection
+export interface ReportDocument extends AppwriteDocument {
+    year: number;
+    titleEn: string;
+    titleAr: string;
+    descriptionEn: string | null;
+    descriptionAr: string | null;
+    pdfUrl: string;
+    reportType: string;
+    isPublished: boolean;
+}
+
+// 10. Sponsor Collection
+export interface SponsorDocument extends AppwriteDocument {
+    organizationName: string;
+    contactName: string;
+    email: string;
+    phone: string | null;
+    website: string | null;
+    message: string | null;
+    sponsorType: string;
+    logoUrl: string | null;
+    isDisplayed: boolean;
     status: string;
 }
 
-// Post Collection
-export interface PostDocument extends AppwriteDocument {
+// 11. Category Collection (New)
+// NOTE: This uses snake_case as explicitly requested in the previous step
+export interface CategoryDocument extends AppwriteDocument {
     slug: string;
     title_en: string;
     title_ar: string;
-    category: string;
-    status: 'draft' | 'published' | 'archived';
+    type: 'sector' | 'beneficiary' | 'tag';
+    isActive: boolean;
 }

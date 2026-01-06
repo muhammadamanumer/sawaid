@@ -25,7 +25,7 @@ export function PathsClient({ paths, programs }: PathsClientProps) {
 
     // Get programs for a specific path
     const getProgramsForPath = (pathId: string) => {
-        return programs.filter(p => p.path_id === pathId);
+        return programs.filter(p => p.pathId === pathId);
     };
 
     return (
@@ -48,11 +48,11 @@ export function PathsClient({ paths, programs }: PathsClientProps) {
             <section className="py-16">
                 <div className="container mx-auto px-4 md:px-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {paths.map((path, index) => {
+                        {paths.length >0    && paths.map((path, index) => {
                             const Icon = iconMap[path.icon as keyof typeof iconMap] || Heart;
                             const pathPrograms = getProgramsForPath(path.$id);
-                            const title = language === 'ar' ? path.title_ar : path.title_en;
-                            const description = language === 'ar' ? path.description_ar : path.description_en;
+                            const title = language === 'ar' ? path.titleAr : path.titleEn;
+                            const description = language === 'ar' ? path.descriptionAr : path.descriptionEn;
 
                             return (
                                 <Card
@@ -91,13 +91,13 @@ export function PathsClient({ paths, programs }: PathsClientProps) {
                                                             <div className="flex items-start justify-between gap-3">
                                                                 <div className="flex-1">
                                                                     <h4 className="font-semibold mb-1">
-                                                                        {language === 'ar' ? program.title_ar : program.title_en}
+                                                                        {language === 'ar' ? program.titleAr : program.titleEn}
                                                                     </h4>
                                                                     <p className="text-sm text-muted-foreground">
-                                                                        {language === 'ar' ? program.summary_ar : program.summary_en}
+                                                                        {language === 'ar' ? program.summaryAr : program.summaryEn}
                                                                     </p>
                                                                 </div>
-                                                                {program.zakat_supported && (
+                                                                {program.zakatSupported && (
                                                                     <Badge variant="outline" className="bg-primary/10 text-primary border-primary shrink-0">
                                                                         {language === 'ar' ? '✓ زكاة' : '✓ Zakat'}
                                                                     </Badge>

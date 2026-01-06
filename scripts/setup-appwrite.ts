@@ -99,7 +99,7 @@ async function setup() {
     await createString('paths', 'slug', 128, true);
     await createString('paths', 'title_en', 255, true);
     await createString('paths', 'title_ar', 255, true);
-    await createString('paths', 'description_en', 5000, false);
+    await createString('paths', 'descriptionEn', 5000, false);
     await createString('paths', 'description_ar', 5000, false);
     await createString('paths', 'icon', 50, true, 'Heart');
     await createInteger('paths', 'order_priority', true, undefined, undefined, 0);
@@ -115,11 +115,11 @@ async function setup() {
     await createString('programs', 'title_ar', 255, true);
     await createString('programs', 'summary_en', 500, false);
     await createString('programs', 'summary_ar', 500, false);
-    await createString('programs', 'description_en', 10000, false);
+    await createString('programs', 'descriptionEn', 10000, false);
     await createString('programs', 'description_ar', 10000, false);
     await createUrl('programs', 'cover_image_url', false);
     await createUrl('programs', 'gallery_images', false, undefined, true);
-    await createBoolean('programs', 'zakat_supported', true, false);
+    await createBoolean('programs', 'zakatSupported', true, false);
     await createEnum('programs', 'status', ['draft', 'published', 'archived'], true, 'draft');
     await createFloat('programs', 'target_amount', false);
     await createFloat('programs', 'current_amount', false, undefined, undefined, 0.0);
@@ -127,9 +127,9 @@ async function setup() {
     await createDatetime('programs', 'end_date', false);
     // Relationships (Create manually or via advanced script - sticking to fields for now or simple relation if easy)
     // Appwrite Node SDK requires creating relationship attribute specifically.
-    // We will assume 'path_id' string for now or try to create relationship if supported well in this version.
+    // We will assume 'pathId' string for now or try to create relationship if supported well in this version.
     // Using String ID for simplicity in script, can replace with Relationship in UI or advanced script.
-    await createString('programs', 'path_id', 255, false); // Foreign Key manual
+    await createString('programs', 'pathId', 255, false); // Foreign Key manual
 
     // --- 3. Campaigns ---
     await createCollection('campaigns', 'Campaigns', [
@@ -139,13 +139,13 @@ async function setup() {
     await createString('campaigns', 'slug', 128, true);
     await createString('campaigns', 'title_en', 255, true);
     await createString('campaigns', 'title_ar', 255, true);
-    await createString('campaigns', 'description_en', 10000, false);
+    await createString('campaigns', 'descriptionEn', 10000, false);
     await createString('campaigns', 'description_ar', 10000, false);
     await createFloat('campaigns', 'goal_amount', true);
     await createFloat('campaigns', 'raised_amount', true, undefined, undefined, 0.0);
     await createString('campaigns', 'currency', 3, true, 'QAR');
     await createBoolean('campaigns', 'is_urgent', true, false);
-    await createBoolean('campaigns', 'zakat_supported', true, false);
+    await createBoolean('campaigns', 'zakatSupported', true, false);
     await createBoolean('campaigns', 'is_featured', true, false);
     await createUrl('campaigns', 'cover_image_url', false);
     await createUrl('campaigns', 'gallery_images', false, undefined, true);

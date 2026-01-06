@@ -7,7 +7,7 @@ Paths collection has 5 attributes:
   - slug: string (required: true, default: null)
   - title_en: string (required: true, default: null)
   - title_ar: string (required: true, default: null)
-  - description_en: string (required: false, default: null)
+  - descriptionEn: string (required: false, default: null)
   - description_ar: string (required: false, default: null)
 
 Attempting insert...

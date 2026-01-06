@@ -15,6 +15,7 @@ import { CheckCircle, MapPin, Briefcase } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { z } from "zod";
 import { submitVolunteerApplication } from "@/services/volunteers";
+import { toast } from "@/hooks/use-toast";
 
 const volunteerSchema = z.object({
     firstName: z.string().min(2, { message: "First name is required" }),
@@ -22,7 +23,7 @@ const volunteerSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email address" }),
     phoneNumber: z.string().optional(),
     positionOfInterest: z.string().min(1, { message: "Please select a position" }),
-    reasonForJoining: z.string().min(0, { message: "Motivation message should be at least 10 characters" }),
+    message: z.string().min(0, { message: "Motivation message should be at least 10 characters" }),
 });
 
 interface VolunteerClientProps {
@@ -40,7 +41,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
         email: "",
         phoneNumber: "",
         positionOfInterest: "",
-        reasonForJoining: "",
+        message: "",
     });
 
     const [formErrors, setFormErrors] = useState<any>({});
@@ -63,7 +64,12 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
             volunteerSchema.parse(formData);  // This will throw an error if validation fails
             // Simulate form submission
             const response = await submitVolunteerApplication(formData);
-            alert("Application submitted successfully!");
+            toast({
+                title: language === 'ar' ? 'تم الإرسال بنجاح!' : 'Submitted Successfully!',
+                description: language === 'ar' ? 'شكراً لتقديمك. سنكون على اتصال قريباً.' : 'Thank you for applying. We will be in touch soon.',
+                duration: 5000,
+                variant: 'default',
+            });
             console.log(response);
             // Reset form
             setFormData({
@@ -72,7 +78,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                 email: "",
                 phoneNumber: "",
                 positionOfInterest: "",
-                reasonForJoining: "",
+                message: "",
             });
             setIsSubmitting(false);
         } catch (error: any) {
@@ -138,7 +144,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                         {positions.length > 0 ? (
                             <Accordion type="single" collapsible className="w-full space-y-4">
                                 {positions.map((position, index) => {
-                                    const title = language === 'ar' ? position.title_ar : position.title_en;
+                                    const title = language === 'ar' ? position.titleAr : position.titleEn;
 
                                     return (
                                         <AccordionItem
@@ -293,8 +299,8 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                                 {positions.map((pos) => (
                                                     <SelectItem key={pos.$id} value={pos.$id}>
                                                         {language === 'ar'
-                                                            ? pos.title_ar
-                                                            : pos.title_en}
+                                                            ? pos.titleAr
+                                                            : pos.titleEn}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -315,14 +321,14 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                         <Textarea
                                             name="message"
                                             rows={5}
-                                            value={formData.reasonForJoining}
+                                            value={formData.message}
                                             onChange={handleChange}
                                             placeholder={t('volunteer.formMotivationPlaceholder')}
                                             className="rounded-xl border-2 resize-none"
                                         />
-                                        {getError("reasonForJoining") && (
+                                        {getError("message") && (
                                             <p className="text-sm text-destructive">
-                                                {getError("reasonForJoining")}
+                                                {getError("message")}
                                             </p>
                                         )}
                                     </div>

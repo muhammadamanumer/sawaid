@@ -1,5 +1,6 @@
-import { getPaths, getPrograms } from '@/lib/appwrite-service';
+import { getPrograms } from '@/services/programs';
 import { PathsClient } from './paths-client';
+import { getPaths } from '@/services/path';
 
 export const revalidate = 60;
 
