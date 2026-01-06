@@ -26,7 +26,8 @@ export default function RootLayout({
 }>) {
   return (
     // The lang and dir attributes will be managed dynamically on the client
-    <html>
+    // suppressHydrationWarning is needed to prevent warnings from browser extensions
+    <html suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -39,7 +40,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased" suppressHydrationWarning>
         <TranslationWrapper>
           <Header />
           {children}
