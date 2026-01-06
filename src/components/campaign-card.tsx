@@ -8,8 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import type { CampaignDocument } from '@/types/appwrite';
 import { AnimatedProgressBar } from '@/components/progress-bar';
 import { useTranslation } from '@/hooks/use-translation';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { ZakatBadge } from '@/components/shared/zakat-badge';
 
+// Support both legacy and new campaign types
 type CampaignCardProps = {
   campaign: CampaignDocument;
 };
@@ -48,9 +49,13 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </Link>
+        
+        {/* Progress Badge */}
         <div className="absolute top-4 right-4 bg-accent/95 backdrop-blur-sm text-accent-foreground px-4 py-2 rounded-full text-xs font-bold shadow-modern-md">
           {Math.round(progress)}% {language === 'ar' ? 'مكتمل' : 'Funded'}
+          {Math.round(progress)}% {language === 'ar' ? 'مكتمل' : 'Funded'}
         </div>
+        
         {/* Zakat Stamp */}
         <div className="absolute top-4 left-4">
           {campaign.zakat_supported ? (
@@ -77,6 +82,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
       <CardContent className="flex flex-col flex-grow p-6">
         <CardTitle className="font-headline text-xl mb-3 leading-tight">
           <Link href={`/campaigns/${campaign.slug}`} className="hover:text-primary transition-colors duration-300">
+            {title}
             {title}
           </Link>
         </CardTitle>

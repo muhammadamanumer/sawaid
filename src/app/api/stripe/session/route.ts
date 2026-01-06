@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-});
+// Lazy initialization to handle missing env variables during build
+let stripe: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (!stripe) {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+    }
+    stripe = new Stripe(secretKey, {
+      apiVersion: '2025-09-30.clover',
+    });
+  }
+  return stripe;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,7 +29,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+    const session = await getStripe().checkout.sessions.retrieve(sessionId, {
       expand: ['customer', 'subscription', 'payment_intent'],
     });
 
