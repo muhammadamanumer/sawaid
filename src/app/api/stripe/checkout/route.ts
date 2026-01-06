@@ -2,9 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { DonationFormData } from '@/lib/stripe-types';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-});
+// Lazy initialization to handle missing env variables during build
+let stripe: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (!stripe) {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+    }
+    stripe = new Stripe(secretKey, {
+      apiVersion: '2025-09-30.clover',
+    });
+  }
+  return stripe;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,10 +46,11 @@ export async function POST(req: NextRequest) {
 
     // Convert amount to cents (Stripe expects amounts in smallest currency unit)
     const amountInCents = Math.round(amount * 100);
+    const stripeClient = getStripe();
 
     // Create checkout session for one-time donations
     if (donationType === 'one-time') {
-      const session = await stripe.checkout.sessions.create({
+      const session = await stripeClient.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
           {
@@ -82,7 +95,7 @@ export async function POST(req: NextRequest) {
     // Create subscription for monthly donations
     if (donationType === 'monthly') {
       // First, create or retrieve customer
-      const customers = await stripe.customers.list({
+      const customers = await stripeClient.customers.list({
         email: email,
         limit: 1,
       });
@@ -92,7 +105,7 @@ export async function POST(req: NextRequest) {
       if (customers.data.length > 0) {
         customer = customers.data[0];
       } else {
-        customer = await stripe.customers.create({
+        customer = await stripeClient.customers.create({
           email,
           name: `${firstName} ${lastName}`,
           phone: phone || undefined,
@@ -105,7 +118,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Create a product for recurring donation
-      const product = await stripe.products.create({
+      const product = await stripeClient.products.create({
         name: campaignId 
           ? `Monthly Donation to ${campaignId}` 
           : 'Monthly Donation - Sawaed Al-Islah',
@@ -115,7 +128,7 @@ export async function POST(req: NextRequest) {
       });
 
       // Create a price for the product
-      const price = await stripe.prices.create({
+      const price = await stripeClient.prices.create({
         product: product.id,
         unit_amount: amountInCents,
         currency: currency.toLowerCase(),
@@ -125,7 +138,7 @@ export async function POST(req: NextRequest) {
       });
 
       // Create checkout session for subscription
-      const session = await stripe.checkout.sessions.create({
+      const session = await stripeClient.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
           {
