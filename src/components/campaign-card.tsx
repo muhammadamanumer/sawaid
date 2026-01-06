@@ -9,6 +9,7 @@ import type { CampaignDocument } from '@/types/appwrite';
 import { AnimatedProgressBar } from '@/components/progress-bar';
 import { useTranslation } from '@/hooks/use-translation';
 import { ZakatBadge } from '@/components/shared/zakat-badge';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 // Support both legacy and new campaign types
 type CampaignCardProps = {
