@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import { useTranslation } from "@/hooks/use-translation";
 import { z } from "zod";
 import { submitVolunteerApplication } from "@/services/volunteers";
 import { toast } from "@/hooks/use-toast";
+import { ensureAnonymousSession } from "@/lib/appwrite";
+import { getVolunteerPositions } from "@/services/volunteer-positions";
 
 const volunteerSchema = z.object({
     firstName: z.string().min(2, { message: "First name is required" }),
@@ -33,6 +35,9 @@ interface VolunteerClientProps {
 export function VolunteerClient({ positions }: VolunteerClientProps) {
     const { t, language } = useTranslation();
     const heroImage = PlaceHolderImages.find(p => p.id === 'volunteer-hero');
+    const [positionsState, setPositionsState] = useState<VolunteerPositionDocument[]>(positions || []);
+    const [positionsLoading, setPositionsLoading] = useState(false);
+    const [positionsError, setPositionsError] = useState<string | null>(null);
     const [selectedPosition, setSelectedPosition] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
@@ -88,6 +93,29 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
         }
     };
 
+    // Fetch volunteer positions on the client to avoid auth issues
+    // Ensures anonymous session for public reads
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                setPositionsLoading(true);
+                setPositionsError(null);
+                await ensureAnonymousSession();
+                const data = await getVolunteerPositions();
+                if (mounted) setPositionsState(data);
+            } catch (err: any) {
+                console.error('Client fetch volunteer positions failed:', err);
+                if (mounted) setPositionsError('Failed to load positions');
+            } finally {
+                if (mounted) setPositionsLoading(false);
+            }
+        })();
+        return () => { mounted = false; };
+    // Intentionally ignore positions prop to always refresh client-side
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Get type label based on position type
     const getTypeLabel = (type: string) => {
         const labels: Record<string, { en: string; ar: string }> = {
@@ -141,9 +169,21 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                             {t('volunteer.positionsTitle')}
                         </h2>
 
-                        {positions.length > 0 ? (
+                        {positionsLoading ? (
+                            <div className="text-center py-12 bg-muted/50 rounded-2xl">
+                                <p className="text-muted-foreground text-lg">
+                                    {language === 'ar' ? 'جارٍ تحميل الوظائف...' : 'Loading positions...'}
+                                </p>
+                            </div>
+                        ) : positionsError ? (
+                            <div className="text-center py-12 bg-destructive/10 rounded-2xl">
+                                <p className="text-destructive text-lg">
+                                    {language === 'ar' ? 'تعذر تحميل الوظائف' : 'Unable to load positions'}
+                                </p>
+                            </div>
+                        ) : positionsState.length > 0 ? (
                             <Accordion type="single" collapsible className="w-full space-y-4">
-                                {positions.map((position, index) => {
+                                {positionsState.map((position, index) => {
                                     const title = language === 'ar' ? position.titleAr : position.titleEn;
 
                                     return (
@@ -296,7 +336,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                             </SelectTrigger>
 
                                             <SelectContent>
-                                                {positions.map((pos) => (
+                                                {positionsState.map((pos) => (
                                                     <SelectItem key={pos.$id} value={pos.$id}>
                                                         {language === 'ar'
                                                             ? pos.titleAr

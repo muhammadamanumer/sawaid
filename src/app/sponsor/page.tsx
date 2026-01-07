@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,11 +8,70 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Users, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Heart, Users, TrendingUp, CheckCircle2, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { registerSponsor } from "@/services/sponsors";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SponsorPage() {
   const { t, language } = useTranslation();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    organizationName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    website: '',
+    sponsorType: '',
+    message: '',
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await registerSponsor({
+        organizationName: formData.organizationName || formData.contactName,
+        contactName: formData.contactName,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        website: formData.website || undefined,
+        message: formData.message || undefined,
+        sponsorType: formData.sponsorType || 'general',
+      });
+      
+      toast({
+        title: language === 'ar' ? 'تم الإرسال بنجاح' : 'Submitted Successfully',
+        description: language === 'ar' 
+          ? 'سنتواصل معك قريباً'
+          : 'We will contact you soon',
+      });
+      
+      // Reset form
+      setFormData({
+        organizationName: '',
+        contactName: '',
+        email: '',
+        phone: '',
+        website: '',
+        sponsorType: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error('Error submitting sponsor form:', error);
+      toast({
+        title: language === 'ar' ? 'حدث خطأ' : 'Error',
+        description: language === 'ar' 
+          ? 'حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.'
+          : 'An error occurred. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -109,19 +169,28 @@ export default function SponsorPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">
-                        {language === 'ar' ? 'الاسم الأول' : 'First Name'}
+                      <Label htmlFor="contactName">
+                        {language === 'ar' ? 'الاسم الكامل' : 'Full Name'}
                       </Label>
-                      <Input id="firstName" required />
+                      <Input 
+                        id="contactName" 
+                        required 
+                        value={formData.contactName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, contactName: e.target.value }))}
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">
-                        {language === 'ar' ? 'اسم العائلة' : 'Last Name'}
+                      <Label htmlFor="organizationName">
+                        {language === 'ar' ? 'اسم المنظمة (اختياري)' : 'Organization Name (Optional)'}
                       </Label>
-                      <Input id="lastName" required />
+                      <Input 
+                        id="organizationName" 
+                        value={formData.organizationName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, organizationName: e.target.value }))}
+                      />
                     </div>
                   </div>
 
@@ -129,21 +198,49 @@ export default function SponsorPage() {
                     <Label htmlFor="email">
                       {language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
                     </Label>
-                    <Input id="email" type="email" required />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      required 
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">
-                      {language === 'ar' ? 'رقم الهاتف' : 'Phone Number'}
-                    </Label>
-                    <Input id="phone" type="tel" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">
+                        {language === 'ar' ? 'رقم الهاتف' : 'Phone Number'}
+                      </Label>
+                      <Input 
+                        id="phone" 
+                        type="tel" 
+                        value={formData.phone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="website">
+                        {language === 'ar' ? 'الموقع الإلكتروني' : 'Website'}
+                      </Label>
+                      <Input 
+                        id="website" 
+                        type="url" 
+                        placeholder="https://"
+                        value={formData.website}
+                        onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="sponsorshipType">
                       {language === 'ar' ? 'نوع الرعاية' : 'Sponsorship Type'}
                     </Label>
-                    <Select>
+                    <Select 
+                      value={formData.sponsorType}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, sponsorType: value }))}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder={language === 'ar' ? 'اختر نوع الرعاية' : 'Select sponsorship type'} />
                       </SelectTrigger>
@@ -157,26 +254,12 @@ export default function SponsorPage() {
                         <SelectItem value="education">
                           {language === 'ar' ? 'رعاية تعليمية' : 'Education Sponsorship'}
                         </SelectItem>
+                        <SelectItem value="corporate">
+                          {language === 'ar' ? 'رعاية مؤسسية' : 'Corporate Sponsorship'}
+                        </SelectItem>
                         <SelectItem value="general">
                           {language === 'ar' ? 'رعاية عامة' : 'General Sponsorship'}
                         </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="amount">
-                      {language === 'ar' ? 'المبلغ الشهري (ريال قطري)' : 'Monthly Amount (QAR)'}
-                    </Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder={language === 'ar' ? 'اختر المبلغ' : 'Select amount'} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="200">QAR 200 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
-                        <SelectItem value="400">QAR 400 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
-                        <SelectItem value="800">QAR 800 / {language === 'ar' ? 'شهريًا' : 'month'}</SelectItem>
-                        <SelectItem value="custom">{language === 'ar' ? 'مبلغ مخصص' : 'Custom Amount'}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -191,6 +274,8 @@ export default function SponsorPage() {
                         ? 'أخبرنا لماذا تريد أن تصبح راعيًا...'
                         : 'Tell us why you want to become a sponsor...'}
                       rows={4}
+                      value={formData.message}
+                      onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     />
                   </div>
 
@@ -203,9 +288,15 @@ export default function SponsorPage() {
                     </Label>
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full">
-                    <CheckCircle2 className="mr-2 h-5 w-5" />
-                    {language === 'ar' ? 'إرسال التسجيل' : 'Submit Registration'}
+                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="mr-2 h-5 w-5" />
+                    )}
+                    {isSubmitting 
+                      ? (language === 'ar' ? 'جاري الإرسال...' : 'Submitting...')
+                      : (language === 'ar' ? 'إرسال التسجيل' : 'Submit Registration')}
                   </Button>
                 </form>
               </CardContent>

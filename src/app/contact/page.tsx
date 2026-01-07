@@ -65,7 +65,7 @@ export default function ContactPage() {
         email: result.data.email,
         subject: result.data.subject,
         message: result.data.message,
-        dateRecieved: new Date().toISOString(),
+        dateReceived: new Date().toISOString(),
       });
       console.log("Contact form submitted successfully:", response);
       // Optionally, reset the form here

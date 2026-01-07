@@ -15,11 +15,23 @@ import { Heart, CreditCard, Loader2 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { getStripe } from "@/lib/stripe";
 import { DonationFormData } from "@/lib/stripe-types";
-import { campaigns } from "@/lib/data";
+
+// Campaign type for the donate form
+export interface DonateFormCampaign {
+  id: string;
+  slug: string;
+  name: string;
+  nameAr: string;
+  zakatSupported: boolean;
+}
+
+interface DonateFormProps {
+  campaigns: DonateFormCampaign[];
+}
 
 const predefinedAmounts = [100, 200, 500, 1000];
 
-export function DonateForm() {
+export function DonateForm({ campaigns }: DonateFormProps) {
   const { t, language } = useTranslation();
   const [frequency, setFrequency] = useState<"one-time" | "monthly">("one-time");
   const [amount, setAmount] = useState(200);
@@ -218,7 +230,7 @@ export function DonateForm() {
               <SelectItem value="general">{ language === 'ar' ? 'تبرع عام' : 'General Donation'}</SelectItem>
               {campaigns.map((campaign) => (
                 <SelectItem key={campaign.id} value={campaign.id}>
-                  {t(`campaigns.${campaign.slug}.title`)}
+                  {language === 'ar' ? campaign.nameAr : campaign.name}
                   {campaign.zakatSupported && ` ✓ ${language === 'ar' ? 'زكاة' : 'Zakat'}`}
                 </SelectItem>
               ))}

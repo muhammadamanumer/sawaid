@@ -1,7 +1,8 @@
-import {   getFeaturedCampaigns, getStats } from "@/lib/appwrite-service";
 import { HomeClient } from "@/components/home-client";
 import { getPaths } from "@/services/path";
 import { getPrograms } from "@/services/programs";
+import { getFeaturedCampaigns } from "@/services/campaigns";
+import { getStats } from "@/services/stats";
 
 export const revalidate = 60; // Revalidate every 60 seconds
 

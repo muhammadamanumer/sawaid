@@ -1,4 +1,4 @@
-import { getCampaigns } from '@/lib/appwrite-service';
+import { getCampaigns } from '@/services/campaigns';
 import { CampaignsClient } from './campaigns-client';
 
 export const revalidate = 60;
