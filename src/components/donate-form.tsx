@@ -27,17 +27,28 @@ export interface DonateFormCampaign {
 
 interface DonateFormProps {
   campaigns: DonateFormCampaign[];
+  preselectedCampaignSlug?: string;
 }
 
 const predefinedAmounts = [100, 200, 500, 1000];
 
-export function DonateForm({ campaigns }: DonateFormProps) {
+export function DonateForm({ campaigns, preselectedCampaignSlug }: DonateFormProps) {
   const { t, language } = useTranslation();
   const [frequency, setFrequency] = useState<"one-time" | "monthly">("one-time");
   const [amount, setAmount] = useState(200);
   const [customAmount, setCustomAmount] = useState("");
   const [currency, setCurrency] = useState<"qar" | "usd" | "eur" | "gbp">("qar");
-  const [campaignId, setCampaignId] = useState<string>("general");
+  
+  // Initialize campaign ID from preselected slug
+  const getInitialCampaignId = () => {
+    if (preselectedCampaignSlug) {
+      const campaign = campaigns.find(c => c.slug === preselectedCampaignSlug);
+      return campaign?.id || "general";
+    }
+    return "general";
+  };
+  
+  const [campaignId, setCampaignId] = useState<string>(getInitialCampaignId);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");

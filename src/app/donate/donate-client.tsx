@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { DonateForm, DonateFormCampaign } from "@/components/donate-form";
 import { useTranslation } from "@/hooks/use-translation";
 
@@ -9,6 +10,8 @@ interface DonateClientProps {
 
 export function DonateClient({ campaigns }: DonateClientProps) {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const preselectedCampaign = searchParams.get('campaign') || undefined;
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-background via-muted/30 to-background py-16 overflow-hidden">
@@ -29,7 +32,7 @@ export function DonateClient({ campaigns }: DonateClientProps) {
         </div>
         
         <div className="animate-fadeInUp animation-delay-200">
-          <DonateForm campaigns={campaigns} />
+          <DonateForm campaigns={campaigns} preselectedCampaignSlug={preselectedCampaign} />
         </div>
         
         <p className="text-center text-sm text-muted-foreground mt-8 animate-fadeInUp animation-delay-300">

@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { DonationFormData } from '@/lib/stripe-types';
 
+/**
+ * ============================================================================
+ * STRIPE CHECKOUT API
+ * ============================================================================
+ * 
+ * Creates Stripe checkout sessions for one-time and recurring donations.
+ * Stores all relevant metadata for Appwrite webhook processing.
+ * ============================================================================
+ */
+
 // Lazy initialization to handle missing env variables during build
 let stripe: Stripe | null = null;
 
@@ -18,6 +28,16 @@ function getStripe(): Stripe {
   return stripe;
 }
 
+// Get the base URL for redirects
+function getBaseUrl(req: NextRequest): string {
+  // In production, use the configured domain
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // Fallback to request origin
+  return req.nextUrl.origin;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body: DonationFormData = await req.json();
@@ -31,15 +51,30 @@ export async function POST(req: NextRequest) {
       email,
       phone,
       campaignId,
+      programId,
       zakatEligible,
       anonymous,
       message,
     } = body;
 
     // Validate required fields
-    if (!amount || !currency || !email || !firstName || !lastName) {
+    if (!amount || amount <= 0) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Invalid amount' },
+        { status: 400 }
+      );
+    }
+
+    if (!currency) {
+      return NextResponse.json(
+        { error: 'Currency is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!email || !firstName || !lastName) {
+      return NextResponse.json(
+        { error: 'Name and email are required' },
         { status: 400 }
       );
     }
@@ -47,6 +82,29 @@ export async function POST(req: NextRequest) {
     // Convert amount to cents (Stripe expects amounts in smallest currency unit)
     const amountInCents = Math.round(amount * 100);
     const stripeClient = getStripe();
+    const baseUrl = getBaseUrl(req);
+
+    // Determine product name based on campaign
+    const productName = campaignId && campaignId !== 'general'
+      ? `Donation - Campaign ${campaignId}`
+      : 'General Donation - Sawaed Al-Islah';
+
+    const productDescription = zakatEligible 
+      ? 'Zakat-eligible donation' 
+      : 'General donation';
+
+    // Common metadata for both one-time and subscription
+    const metadata = {
+      donationType: donationType || 'one-time',
+      campaignId: campaignId || 'general',
+      programId: programId || '',
+      zakatEligible: zakatEligible?.toString() || 'false',
+      anonymous: anonymous?.toString() || 'false',
+      firstName,
+      lastName,
+      phone: phone || '',
+      message: message || '',
+    };
 
     // Create checkout session for one-time donations
     if (donationType === 'one-time') {
@@ -57,13 +115,8 @@ export async function POST(req: NextRequest) {
             price_data: {
               currency: currency.toLowerCase(),
               product_data: {
-                name: campaignId 
-                  ? `Donation to ${campaignId}` 
-                  : 'General Donation - Sawaed Al-Islah',
-                description: zakatEligible 
-                  ? 'Zakat-eligible donation' 
-                  : 'General donation',
-                images: ['https://your-domain.com/logo.png'], // Replace with actual logo URL
+                name: productName,
+                description: productDescription,
               },
               unit_amount: amountInCents,
             },
@@ -71,18 +124,12 @@ export async function POST(req: NextRequest) {
           },
         ],
         mode: 'payment',
-        success_url: `${req.nextUrl.origin}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.nextUrl.origin}/donate/cancel`,
+        success_url: `${baseUrl}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/donate/cancel`,
         customer_email: email,
-        metadata: {
-          donationType,
-          campaignId: campaignId || 'general',
-          zakatEligible: zakatEligible?.toString() || 'false',
-          anonymous: anonymous?.toString() || 'false',
-          firstName,
-          lastName,
-          phone: phone || '',
-          message: message || '',
+        metadata,
+        payment_intent_data: {
+          metadata, // Also store metadata on payment intent
         },
       });
 
@@ -104,6 +151,16 @@ export async function POST(req: NextRequest) {
       
       if (customers.data.length > 0) {
         customer = customers.data[0];
+        // Update customer metadata
+        await stripeClient.customers.update(customer.id, {
+          name: `${firstName} ${lastName}`,
+          phone: phone || undefined,
+          metadata: {
+            firstName,
+            lastName,
+            anonymous: anonymous?.toString() || 'false',
+          },
+        });
       } else {
         customer = await stripeClient.customers.create({
           email,
@@ -119,12 +176,12 @@ export async function POST(req: NextRequest) {
 
       // Create a product for recurring donation
       const product = await stripeClient.products.create({
-        name: campaignId 
-          ? `Monthly Donation to ${campaignId}` 
-          : 'Monthly Donation - Sawaed Al-Islah',
-        description: zakatEligible 
-          ? 'Monthly Zakat-eligible donation' 
-          : 'Monthly general donation',
+        name: `Monthly ${productName}`,
+        description: `Monthly ${productDescription}`,
+        metadata: {
+          campaignId: campaignId || 'general',
+          zakatEligible: zakatEligible?.toString() || 'false',
+        },
       });
 
       // Create a price for the product
@@ -147,18 +204,12 @@ export async function POST(req: NextRequest) {
           },
         ],
         mode: 'subscription',
-        success_url: `${req.nextUrl.origin}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.nextUrl.origin}/donate/cancel`,
+        success_url: `${baseUrl}/donate/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/donate/cancel`,
         customer: customer.id,
-        metadata: {
-          donationType,
-          campaignId: campaignId || 'general',
-          zakatEligible: zakatEligible?.toString() || 'false',
-          anonymous: anonymous?.toString() || 'false',
-          firstName,
-          lastName,
-          phone: phone || '',
-          message: message || '',
+        metadata,
+        subscription_data: {
+          metadata, // Store metadata on subscription for recurring payment processing
         },
       });
 

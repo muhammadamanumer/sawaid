@@ -37,6 +37,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
 
   // Use cover image from Appwrite or fallback
   const coverImage = campaign.coverImageUrl || DEFAULT_COVER;
+  
   return (
     <Card className="group flex flex-col overflow-hidden transition-all duration-500 hover:shadow-modern-2xl h-full hover:-translate-y-2 border-border/50 hover:border-primary/30">
       <CardHeader className="p-0 relative overflow-hidden">
@@ -52,7 +53,6 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         
         {/* Progress Badge */}
         <div className="absolute top-4 right-4 bg-accent/95 backdrop-blur-sm text-accent-foreground px-4 py-2 rounded-full text-xs font-bold shadow-modern-md">
-          {Math.round(progress)}% {language === 'ar' ? 'مكتمل' : 'Funded'}
           {Math.round(progress)}% {language === 'ar' ? 'مكتمل' : 'Funded'}
         </div>
         
@@ -82,7 +82,6 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
       <CardContent className="flex flex-col flex-grow p-6">
         <CardTitle className="font-headline text-xl mb-3 leading-tight">
           <Link href={`/campaigns/${campaign.slug}`} className="hover:text-primary transition-colors duration-300">
-            {title}
             {title}
           </Link>
         </CardTitle>

@@ -1,3 +1,12 @@
+/**
+ * ============================================================================
+ * STRIPE TYPES
+ * ============================================================================
+ * 
+ * Type definitions for Stripe payment integration.
+ * ============================================================================
+ */
+
 export interface DonationFormData {
   amount: number;
   currency: 'qar' | 'usd' | 'eur' | 'gbp';
@@ -7,6 +16,7 @@ export interface DonationFormData {
   email: string;
   phone?: string;
   campaignId?: string;
+  programId?: string;
   zakatEligible?: boolean;
   anonymous?: boolean;
   message?: string;
@@ -14,12 +24,14 @@ export interface DonationFormData {
 
 export interface StripePaymentMetadata {
   donationType: string;
-  campaignId?: string;
-  zakatEligible?: string;
-  anonymous?: string;
+  campaignId: string;
+  programId?: string;
+  zakatEligible: string;
+  anonymous: string;
   firstName: string;
   lastName: string;
   phone?: string;
+  message?: string;
 }
 
 export interface CheckoutSessionResponse {
@@ -30,4 +42,21 @@ export interface CheckoutSessionResponse {
 export interface PaymentIntentResponse {
   clientSecret: string;
   paymentIntentId: string;
+}
+
+export interface DonationRecord {
+  id: string;
+  campaignId: string | null;
+  programId: string | null;
+  amount: number;
+  currency: string;
+  donorName: string | null;
+  donorEmail: string | null;
+  isAnonymous: boolean;
+  isRecurring: boolean;
+  paymentRef: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  donationType: string;
+  message: string | null;
+  createdAt: string;
 }

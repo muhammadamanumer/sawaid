@@ -108,6 +108,8 @@ const SCHEMA = [
             { key: 'endDate', type: 'datetime', required: false },
             { key: 'isFeatured', type: 'boolean', required: false, default: false },
             { key: 'isActive', type: 'boolean', required: false, default: true },
+            { key: 'beneficiaryCount', type: 'integer', required: false },
+            { key: 'location', type: 'string', size: 255, required: false },
         ],
         indexes: [
             { key: 'idx_slug', type: 'unique', attributes: ['slug'] },
@@ -140,6 +142,7 @@ const SCHEMA = [
             { key: 'status', type: 'string', size: 50, required: false, default: 'pending' },
             { key: 'donationType', type: 'string', size: 50, required: false, default: 'general' },
             { key: 'message', type: 'string', size: 2000, required: false },
+            { key: 'receiptUrl', type: 'url', required: false },
         ],
         indexes: [
             { key: 'idx_campaign_stats', type: 'key', attributes: ['campaignId', 'status'] },
@@ -166,6 +169,7 @@ const SCHEMA = [
             { key: 'availability', type: 'string', size: 1000, required: false },
             { key: 'message', type: 'string', size: 2000, required: false },
             { key: 'status', type: 'string', size: 50, required: false, default: 'new' },
+            { key: 'resumeUrl', type: 'url', required: false },
         ],
         indexes: [
             { key: 'idx_status', type: 'key', attributes: ['status'] },
@@ -213,6 +217,9 @@ const SCHEMA = [
             { key: 'tags', type: 'string', size: 50, required: false, array: true },
             { key: 'campaignId', type: 'string', size: 50, required: false },
             { key: 'displayOrder', type: 'integer', required: false, default: 0 },
+            { key: 'duration', type: 'integer', required: false },
+            { key: 'fileSize', type: 'integer', required: false },
+            { key: 'mimeType', type: 'string', size: 100, required: false },
         ],
         indexes: [
             { key: 'idx_type', type: 'key', attributes: ['type'] },
@@ -242,6 +249,9 @@ const SCHEMA = [
             { key: 'authorName', type: 'string', size: 100, required: false },
             { key: 'publishedAt', type: 'datetime', required: false },
             { key: 'isPublished', type: 'boolean', required: false, default: false },
+            { key: 'metaTitle', type: 'string', size: 100, required: false },
+            { key: 'metaDescription', type: 'string', size: 200, required: false },
+            { key: 'tags', type: 'string', size: 50, required: false, array: true },
         ],
         indexes: [
             { key: 'idx_slug', type: 'unique', attributes: ['slug'] },
@@ -267,6 +277,8 @@ const SCHEMA = [
             { key: 'pdfUrl', type: 'url', required: true },
             { key: 'reportType', type: 'string', size: 50, required: false, default: 'annual' },
             { key: 'isPublished', type: 'boolean', required: false, default: true },
+            { key: 'coverImageUrl', type: 'url', required: false },
+            { key: 'fileSize', type: 'integer', required: false },
         ],
         indexes: [
             { key: 'idx_year_sort', type: 'key', attributes: ['year', 'isPublished'] },
