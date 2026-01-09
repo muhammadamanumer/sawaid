@@ -1,19 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
-import { Client, Databases, ID } from 'node-appwrite';
+import {
+  createDonationRecord,
+  updateCampaignRaisedAmount,
+  decreaseCampaignRaisedAmount,
+  updateDonationByPaymentRef,
+  getDonationByPaymentRef,
+  CreateDonationData,
+} from '@/lib/appwrite-server';
 
 /**
  * ============================================================================
- * STRIPE WEBHOOK HANDLER
+ * STRIPE WEBHOOK HANDLER - PRODUCTION GRADE
  * ============================================================================
  * 
  * This webhook handles all Stripe events including:
  * - checkout.session.completed (one-time donations)
  * - invoice.payment_succeeded (recurring donations)
+ * - invoice.payment_failed (failed recurring payments)
  * - customer.subscription.created/updated/deleted
+ * - charge.refunded (refunds)
  * 
- * It saves donation records to Appwrite and updates campaign totals.
+ * PRODUCTION FEATURES:
+ * ✅ Signature verification for security
+ * ✅ Idempotency checks to prevent duplicate donations
+ * ✅ Refund handling with campaign total adjustment
+ * ✅ Comprehensive error logging
+ * ✅ Graceful error handling (returns 200 to prevent Stripe retries on app errors)
  * ============================================================================
  */
 
@@ -33,121 +47,7 @@ function getStripe(): Stripe {
   return stripe;
 }
 
-// Initialize Appwrite server client
-function getAppwriteClient(): { databases: Databases } {
-  const client = new Client();
-  
-  const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1';
-  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
-  const apiKey = process.env.APPWRITE_API_KEY;
-  
-  if (!projectId || !apiKey) {
-    throw new Error('Appwrite configuration missing');
-  }
-  
-  client
-    .setEndpoint(endpoint)
-    .setProject(projectId)
-    .setKey(apiKey);
-  
-  return {
-    databases: new Databases(client),
-  };
-}
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || 'sawaid_db_test';
-const COLLECTIONS = {
-  DONATIONS: 'donations',
-  CAMPAIGNS: 'campaigns',
-};
-
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-interface DonationData {
-  campaignId: string | null;
-  programId: string | null;
-  amount: number;
-  currency: string;
-  donorName: string | null;
-  donorEmail: string | null;
-  isAnonymous: boolean;
-  isRecurring: boolean;
-  paymentRef: string;
-  status: 'pending' | 'completed' | 'failed' | 'refunded';
-  donationType: string;
-  message: string | null;
-}
-
-/**
- * Create donation record in Appwrite
- */
-async function createDonationRecord(data: DonationData): Promise<void> {
-  try {
-    const { databases } = getAppwriteClient();
-    
-    await databases.createDocument(
-      DATABASE_ID,
-      COLLECTIONS.DONATIONS,
-      ID.unique(),
-      {
-        campaignId: data.campaignId,
-        programId: data.programId,
-        amount: data.amount,
-        currency: data.currency,
-        donorName: data.donorName,
-        donorEmail: data.donorEmail,
-        isAnonymous: data.isAnonymous,
-        isRecurring: data.isRecurring,
-        paymentRef: data.paymentRef,
-        status: data.status,
-        donationType: data.donationType,
-        message: data.message,
-      }
-    );
-    
-    console.log('✅ Donation record created:', data.paymentRef);
-  } catch (error) {
-    console.error('❌ Failed to create donation record:', error);
-    throw error;
-  }
-}
-
-/**
- * Update campaign raised amount
- */
-async function updateCampaignRaisedAmount(
-  campaignId: string, 
-  amount: number
-): Promise<void> {
-  try {
-    const { databases } = getAppwriteClient();
-    
-    // Get current campaign data
-    const campaign = await databases.getDocument(
-      DATABASE_ID,
-      COLLECTIONS.CAMPAIGNS,
-      campaignId
-    );
-    
-    const currentRaised = (campaign as any).raisedAmount || 0;
-    const newRaised = currentRaised + amount;
-    
-    // Update campaign
-    await databases.updateDocument(
-      DATABASE_ID,
-      COLLECTIONS.CAMPAIGNS,
-      campaignId,
-      {
-        raisedAmount: newRaised,
-      }
-    );
-    
-    console.log(`✅ Updated campaign ${campaignId}: ${currentRaised} → ${newRaised}`);
-  } catch (error) {
-    console.error(`❌ Failed to update campaign ${campaignId}:`, error);
-    // Don't throw - donation was still recorded
-  }
-}
 
 /**
  * Process successful checkout session
@@ -161,7 +61,10 @@ async function handleCheckoutCompleted(
   const amountInCents = session.amount_total || 0;
   const amount = amountInCents / 100;
   
-  const donationData: DonationData = {
+  // Determine payment reference - use payment_intent for one-time, subscription for recurring
+  const paymentRef = (session.payment_intent as string) || (session.subscription as string) || session.id;
+  
+  const donationData: CreateDonationData = {
     campaignId: metadata.campaignId && metadata.campaignId !== 'general' ? metadata.campaignId : null,
     programId: metadata.programId || null,
     amount,
@@ -172,17 +75,17 @@ async function handleCheckoutCompleted(
     donorEmail: session.customer_email || null,
     isAnonymous: metadata.anonymous === 'true',
     isRecurring: session.mode === 'subscription',
-    paymentRef: session.payment_intent as string || session.subscription as string || session.id,
+    paymentRef,
     status: 'completed',
     donationType: metadata.zakatEligible === 'true' ? 'zakat' : 'general',
     message: metadata.message || null,
   };
   
-  // Create donation record
-  await createDonationRecord(donationData);
+  // Create donation record (idempotency is handled in the function)
+  const result = await createDonationRecord(donationData);
   
-  // Update campaign total if campaign-specific donation
-  if (donationData.campaignId) {
+  // Only update campaign total if this was a new donation (not a duplicate)
+  if (result !== 'existing' && donationData.campaignId) {
     await updateCampaignRaisedAmount(donationData.campaignId, amount);
   }
 }
@@ -195,7 +98,7 @@ async function handleInvoicePaymentSucceeded(
 ): Promise<void> {
   // Skip if this is the first invoice (handled by checkout.session.completed)
   if (invoice.billing_reason === 'subscription_create') {
-    console.log('Skipping first invoice - handled by checkout session');
+    console.log('⏭️ Skipping first invoice - handled by checkout session');
     return;
   }
   
@@ -214,7 +117,10 @@ async function handleInvoicePaymentSucceeded(
     }
   }
   
-  const donationData: DonationData = {
+  // Determine payment reference
+  const paymentRef = (invoice.payment_intent as string) || invoice.id;
+  
+  const donationData: CreateDonationData = {
     campaignId: metadata.campaignId && metadata.campaignId !== 'general' ? metadata.campaignId : null,
     programId: metadata.programId || null,
     amount,
@@ -225,19 +131,52 @@ async function handleInvoicePaymentSucceeded(
     donorEmail: invoice.customer_email || null,
     isAnonymous: metadata.anonymous === 'true',
     isRecurring: true,
-    paymentRef: invoice.payment_intent as string || invoice.id,
+    paymentRef,
     status: 'completed',
     donationType: metadata.zakatEligible === 'true' ? 'zakat' : 'general',
     message: metadata.message || null,
   };
   
-  // Create donation record for recurring payment
-  await createDonationRecord(donationData);
+  // Create donation record for recurring payment (idempotency handled)
+  const result = await createDonationRecord(donationData);
   
-  // Update campaign total if campaign-specific donation
-  if (donationData.campaignId) {
+  // Only update campaign total if this was a new donation
+  if (result !== 'existing' && donationData.campaignId) {
     await updateCampaignRaisedAmount(donationData.campaignId, amount);
   }
+}
+
+/**
+ * Process charge refund
+ */
+async function handleChargeRefunded(charge: Stripe.Charge): Promise<void> {
+  const paymentIntentId = charge.payment_intent as string;
+  
+  if (!paymentIntentId) {
+    console.log('⚠️ No payment intent on refunded charge');
+    return;
+  }
+  
+  // Find the original donation
+  const donation = await getDonationByPaymentRef(paymentIntentId);
+  
+  if (!donation) {
+    console.log(`⚠️ No donation found for payment intent: ${paymentIntentId}`);
+    return;
+  }
+  
+  // Calculate refund amount (could be partial)
+  const refundAmount = (charge.amount_refunded || 0) / 100;
+  
+  // Update donation status to refunded
+  await updateDonationByPaymentRef(paymentIntentId, 'refunded');
+  
+  // Decrease campaign raised amount if applicable
+  if (donation.campaignId) {
+    await decreaseCampaignRaisedAmount(donation.campaignId, refundAmount);
+  }
+  
+  console.log(`✅ Refund processed: ${refundAmount} ${donation.currency}`);
 }
 
 export async function POST(req: NextRequest) {
@@ -344,7 +283,7 @@ export async function POST(req: NextRequest) {
       case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
         console.log('💸 Charge refunded:', charge.id);
-        // TODO: Update donation status to 'refunded'
+        await handleChargeRefunded(charge);
         break;
       }
 
