@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Image as ImageIcon, Video, Download, Play } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Image as ImageIcon, Video, Download, Play, X, Maximize2 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import type { MediaAssetDocument } from "@/types/appwrite";
 
@@ -13,10 +14,127 @@ interface GalleryClientProps {
   mediaAssets: MediaAssetDocument[];
 }
 
+// Video Player Modal Component
+function VideoPlayerModal({
+  isOpen,
+  onClose,
+  videoUrl,
+  title,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  videoUrl: string;
+  title: string;
+}) {
+  const { language } = useTranslation();
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-5xl w-full p-0 overflow-hidden bg-black/95 border-none">
+        <DialogTitle className="sr-only">{title || (language === 'ar' ? 'مشغل الفيديو' : 'Video Player')}</DialogTitle>
+        <DialogDescription className="sr-only">
+          {language === 'ar' ? 'شاهد الفيديو' : 'Watch the video'}
+        </DialogDescription>
+        
+        {/* Close Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/20 text-white rounded-full"
+          onClick={onClose}
+        >
+          <X className="h-5 w-5" />
+        </Button>
+
+        {/* Video Player */}
+        <div className="relative w-full aspect-video">
+          <video
+            src={videoUrl}
+            controls
+            autoPlay
+            className="w-full h-full object-contain"
+            controlsList="nodownload"
+          >
+            <track kind="captions" />
+            {language === 'ar' ? 'متصفحك لا يدعم تشغيل الفيديو' : 'Your browser does not support video playback'}
+          </video>
+        </div>
+
+        {/* Video Title */}
+        {title && (
+          <div className="p-4 bg-black/80">
+            <h3 className="text-white font-semibold text-lg">{title}</h3>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Image Lightbox Modal Component
+function ImageLightboxModal({
+  isOpen,
+  onClose,
+  imageUrl,
+  title,
+  altText,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  imageUrl: string;
+  title: string;
+  altText: string;
+}) {
+  const { language } = useTranslation();
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-6xl w-full p-0 overflow-hidden bg-black/95 border-none">
+        <DialogTitle className="sr-only">{title || (language === 'ar' ? 'عارض الصور' : 'Image Viewer')}</DialogTitle>
+        <DialogDescription className="sr-only">
+          {altText || (language === 'ar' ? 'عرض الصورة' : 'View the image')}
+        </DialogDescription>
+        
+        {/* Close Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/20 text-white rounded-full"
+          onClick={onClose}
+        >
+          <X className="h-5 w-5" />
+        </Button>
+
+        {/* Image */}
+        <div className="relative w-full h-[80vh]">
+          <Image
+            src={imageUrl}
+            alt={altText || title || 'Gallery image'}
+            fill
+            className="object-contain"
+            sizes="(max-width: 1536px) 100vw, 1536px"
+          />
+        </div>
+
+        {/* Image Title */}
+        {title && (
+          <div className="p-4 bg-black/80">
+            <h3 className="text-white font-semibold text-lg">{title}</h3>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function GalleryClient({ mediaAssets }: GalleryClientProps) {
   const { language } = useTranslation();
   const [filter, setFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "image" | "video">("all");
+  
+  // Modal states
+  const [selectedVideo, setSelectedVideo] = useState<MediaAssetDocument | null>(null);
+  const [selectedImage, setSelectedImage] = useState<MediaAssetDocument | null>(null);
 
   // Get unique tags for filter options
   const allTags = Array.from(
@@ -40,8 +158,43 @@ export function GalleryClient({ mediaAssets }: GalleryClientProps) {
     }).format(new Date(dateString));
   };
 
+  // Handle media item click
+  const handleMediaClick = useCallback((item: MediaAssetDocument) => {
+    if (item.type === "video") {
+      setSelectedVideo(item);
+    } else {
+      setSelectedImage(item);
+    }
+  }, []);
+
+  // Close modals
+  const closeVideoModal = useCallback(() => setSelectedVideo(null), []);
+  const closeImageModal = useCallback(() => setSelectedImage(null), []);
+
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-20 overflow-hidden">
+    <>
+      {/* Video Player Modal */}
+      {selectedVideo && (
+        <VideoPlayerModal
+          isOpen={!!selectedVideo}
+          onClose={closeVideoModal}
+          videoUrl={selectedVideo.url}
+          title={language === 'ar' ? selectedVideo.titleAr || '' : selectedVideo.titleEn || ''}
+        />
+      )}
+
+      {/* Image Lightbox Modal */}
+      {selectedImage && (
+        <ImageLightboxModal
+          isOpen={!!selectedImage}
+          onClose={closeImageModal}
+          imageUrl={selectedImage.url}
+          title={language === 'ar' ? selectedImage.titleAr || '' : selectedImage.titleEn || ''}
+          altText={selectedImage.altText || ''}
+        />
+      )}
+
+      <div className="relative min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-20 overflow-hidden">
       {/* Decorative Background */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 right-20 w-96 h-96 bg-primary rounded-full blur-3xl animate-pulse"></div>
@@ -123,16 +276,37 @@ export function GalleryClient({ mediaAssets }: GalleryClientProps) {
               return (
                 <Card
                   key={item.$id}
-                  className="group overflow-hidden shadow-modern-lg border-border/50 hover:shadow-modern-2xl transition-all duration-500 hover:-translate-y-2"
+                  className="group overflow-hidden shadow-modern-lg border-border/50 hover:shadow-modern-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
                   style={{ animationDelay: `${(index + 5) * 50}ms` }}
+                  onClick={() => handleMediaClick(item)}
                 >
                   <div className="relative h-72 overflow-hidden">
-                    <Image
-                      src={item.thumbnailUrl || item.url}
-                      alt={title || item.altText || 'Media'}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                    {item.type === "video" && item.thumbnailUrl ? (
+                      <Image
+                        src={item.thumbnailUrl}
+                        alt={title || item.altText || 'Video thumbnail'}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : item.type === "video" ? (
+                      // Video without thumbnail - show video element as preview
+                      <div className="relative w-full h-full bg-muted">
+                        <video
+                          src={item.url}
+                          className="w-full h-full object-cover"
+                          muted
+                          preload="metadata"
+                        />
+                        <div className="absolute inset-0 bg-black/20" />
+                      </div>
+                    ) : (
+                      <Image
+                        src={item.thumbnailUrl || item.url}
+                        alt={title || item.altText || 'Gallery image'}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                     {/* Type Badge */}
@@ -158,9 +332,18 @@ export function GalleryClient({ mediaAssets }: GalleryClientProps) {
 
                     {/* Play Button for Videos */}
                     {item.type === "video" && (
-                      <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="bg-primary/90 backdrop-blur-sm rounded-full p-6 group-hover:scale-110 transition-transform duration-300 shadow-modern-xl">
                           <Play className="h-8 w-8 text-primary-foreground" fill="currentColor" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Expand Button for Images */}
+                    {item.type === "image" && (
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                        <div className="bg-primary/90 backdrop-blur-sm rounded-full p-4 shadow-modern-xl">
+                          <Maximize2 className="h-6 w-6 text-primary-foreground" />
                         </div>
                       </div>
                     )}
@@ -171,6 +354,7 @@ export function GalleryClient({ mediaAssets }: GalleryClientProps) {
                       target="_blank" 
                       rel="noopener noreferrer"
                       download
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <Button
                         size="icon"
@@ -239,6 +423,7 @@ export function GalleryClient({ mediaAssets }: GalleryClientProps) {
           </Card>
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

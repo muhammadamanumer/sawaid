@@ -1,8 +1,12 @@
 # Appwrite Database Schema for Sawaid Platform
 
+**Last Updated:** 11-Jan-2026 10:00 PM
+
 ## Overview
 
 This document defines the complete database schema for the Sawaid humanitarian organization platform using **Appwrite** as the backend-as-a-service.
+
+**Schema Version:** 2.0 (displayOrder removed from all collections)
 
 ---
 
@@ -74,14 +78,15 @@ This document defines the complete database schema for the Sawaid humanitarian o
 | `descriptionAr`   | string   | ❌        | null    | Arabic description                       |
 | `icon`            | string   | ✅        | -       | Icon identifier (e.g., "GraduationCap")  |
 | `coverImageUrl`   | string   | ❌        | null    | Cover image URL                          |
-| `displayOrder`    | integer  | ❌        | 0       | Sort order for display                   |
 | `isActive`        | boolean  | ❌        | true    | Whether path is visible                  |
 | `$createdAt`      | datetime | Auto     | -       | Creation timestamp                       |
 | `$updatedAt`      | datetime | Auto     | -       | Last update timestamp                    |
 
 **Indexes:**
 - `slug` (unique)
-- `isActive` + `displayOrder` (for sorted active paths)
+- `isActive` (for filtering active paths)
+
+**Note:** Sorting can be done on the client-side using `$createdAt` or alphabetically by `titleEn`/`titleAr`.
 
 ---
 
@@ -102,15 +107,16 @@ This document defines the complete database schema for the Sawaid humanitarian o
 | `descriptionAr`   | string   | ❌        | null    | Full Arabic description                  |
 | `zakatSupported`  | boolean  | ❌        | false   | 🟢 Zakat eligibility stamp               |
 | `coverImageUrl`   | string   | ❌        | null    | Cover image URL                          |
-| `displayOrder`    | integer  | ❌        | 0       | Sort order within path                   |
 | `isActive`        | boolean  | ❌        | true    | Whether program is visible               |
 | `$createdAt`      | datetime | Auto     | -       | Creation timestamp                       |
 | `$updatedAt`      | datetime | Auto     | -       | Last update timestamp                    |
 
 **Indexes:**
 - `slug` (unique)
-- `pathId` + `isActive` + `displayOrder` (for listing programs by path)
+- `pathId` + `isActive` (for listing programs by path)
 - `zakatSupported` (for filtering Zakat-eligible programs)
+
+**Note:** Sorting can be done on the client-side using `$createdAt` or alphabetically by title.
 
 **Relationships:**
 - **Belongs to:** Path (via `pathId`)
@@ -250,13 +256,16 @@ This document defines the complete database schema for the Sawaid humanitarian o
 | `altText`         | string   | ❌        | null    | Accessibility alt text                   |
 | `tags`            | string[] | ❌        | []      | Categorization tags                      |
 | `campaignId`      | string   | ❌        | null    | Link to specific campaign                |
-| `displayOrder`    | integer  | ❌        | 0       | Sort order in gallery                    |
+| `duration`        | integer  | ❌        | null    | Video duration in seconds                |
+| `fileSize`        | integer  | ❌        | null    | File size in bytes                       |
+| `mimeType`        | string   | ❌        | null    | MIME type (e.g., video/mp4)              |
 | `$createdAt`      | datetime | Auto     | -       | Upload date                              |
 
 **Indexes:**
 - `type` (for filtering by media type)
 - `campaignId` (for campaign-specific gallery)
-- `displayOrder` (for sorted display)
+
+**Note:** Gallery items are sorted by `$createdAt` (newest first) on the client-side.
 
 ---
 

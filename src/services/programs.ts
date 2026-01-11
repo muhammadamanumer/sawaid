@@ -19,12 +19,18 @@ export async function getPrograms(): Promise<ProgramDocument[]> {
 }
 
 export async function getProgramsByPathId(pathId: string): Promise<ProgramDocument[]> {
+    // Validate pathId parameter - must be a non-empty string
+    if (!pathId || typeof pathId !== 'string' || pathId.trim() === '') {
+        console.warn('getProgramsByPathId called with invalid pathId:', pathId);
+        return [];
+    }
+
     try {
         const response = await tablesDB.listRows({
             databaseId: DATABASE_ID,    
             tableId: COLLECTIONS.PROGRAMS,
             queries: [
-                Query.equal('pathId', pathId),
+                Query.equal('pathId', pathId.trim()),
                 Query.limit(100),
             ],
         });
@@ -36,16 +42,24 @@ export async function getProgramsByPathId(pathId: string): Promise<ProgramDocume
 }
 
 export async function getProgramBySlug(slug: string): Promise<ProgramDocument | null> {
+    // Validate slug parameter
+    if (!slug || typeof slug !== 'string' || slug.trim() === '') {
+        console.warn('getProgramBySlug called with invalid slug:', slug);
+        return null;
+    }
+
     try {
         const response = await tablesDB.listRows({
             databaseId: DATABASE_ID,
             tableId: COLLECTIONS.PROGRAMS,
             queries: [
-                Query.equal('slug', slug),
+                Query.equal('slug', slug.trim()),
                 Query.limit(1),
             ],
         });
-        return response.rows as unknown as ProgramDocument || null;
+        
+        const rows = response.rows as unknown as ProgramDocument[];
+        return rows.length > 0 ? rows[0] : null;
     } catch (error) {
         console.error('Error fetching program by slug:', error);
         return null;

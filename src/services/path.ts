@@ -21,16 +21,24 @@ export async function getPaths(): Promise<PathDocument[]> {
 }
 
 export async function getPathBySlug(slug: string): Promise<PathDocument | null> {
+    // Validate slug parameter
+    if (!slug || typeof slug !== 'string' || slug.trim() === '') {
+        console.warn('getPathBySlug called with invalid slug:', slug);
+        return null;
+    }
+
     try {
         const response = await tablesDB.listRows({
             databaseId: DATABASE_ID,
             tableId: COLLECTIONS.PATHS,
             queries: [
-                Query.equal('slug', slug),
+                Query.equal('slug', slug.trim()),
                 Query.limit(1),
             ],
         });
-        return response.rows as unknown as PathDocument || null;
+        
+        const rows = response.rows as unknown as PathDocument[];
+        return rows.length > 0 ? rows[0] : null;
     } catch (error) {
         console.error('Error fetching path by slug:', error);
         return null;

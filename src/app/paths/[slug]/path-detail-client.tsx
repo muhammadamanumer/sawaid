@@ -34,14 +34,40 @@ interface PathDetailClientProps {
   programs: ProgramDocument[];
 }
 
+// Default fallback image when no image is available
+const DEFAULT_FALLBACK_IMAGE = '/placeholder-path.svg';
+
+/**
+ * Safely gets an image URL with fallback chain
+ */
+function getImageUrl(primaryUrl: string | null | undefined, fallbackUrl?: string): string {
+  if (primaryUrl && primaryUrl.trim() !== '') {
+    return primaryUrl;
+  }
+  if (fallbackUrl && fallbackUrl.trim() !== '') {
+    return fallbackUrl;
+  }
+  return DEFAULT_FALLBACK_IMAGE;
+}
+
 export function PathDetailClient({ path, programs }: PathDetailClientProps) {
   const { t, language } = useTranslation();
   
   const title = language === 'ar' ? path.titleAr : path.titleEn;
   const description = language === 'ar' ? path.descriptionAr : path.descriptionEn;
   
+  // Safe title for alt text with fallback
+  const safeTitle = title || path.titleEn || path.titleAr || 'Path';
+  const safeDescription = description || path.descriptionEn || path.descriptionAr || '';
+  
   const Icon = iconMap[path.icon] || Heart;
   const pathImage = PlaceHolderImages.find((p) => p.id === `path-${path.slug}`);
+  
+  // Safe image URL with proper fallback chain
+  const heroImageUrl = getImageUrl(
+    path.coverImageUrl,
+    pathImage?.imageUrl
+  );
 
   const totalProjects = programs.length;
   const zakatEligible = programs.filter((p) => p.zakatSupported).length;
@@ -110,12 +136,23 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
               {/* Right: Path Image */}
               <div className="animate-fadeInUp animation-delay-200">
                 <div className="relative rounded-2xl overflow-hidden shadow-modern-xl aspect-square md:aspect-auto md:h-96">
-                  <Image
-                    src={path.coverImageUrl || pathImage?.imageUrl || PlaceHolderImages[0]?.imageUrl || ""}
-                    alt={title}
-                    fill
-                    className="object-cover"
-                  />
+                  {heroImageUrl !== DEFAULT_FALLBACK_IMAGE ? (
+                    <Image
+                      src={heroImageUrl}
+                      alt={safeTitle}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        // Hide broken image gracefully
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                      <Icon className="h-24 w-24 text-primary/50" />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
                 </div>
               </div>
@@ -201,6 +238,15 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
                 const programDescription = language === 'ar' 
                   ? (program.descriptionAr || program.summaryAr) 
                   : (program.descriptionEn || program.summaryEn);
+                
+                // Safe program title for alt text
+                const safeProgramTitle = programTitle || program.titleEn || program.titleAr || 'Program';
+                
+                // Safe program image URL with fallback
+                const programImageUrl = getImageUrl(
+                  program.coverImageUrl,
+                  PlaceHolderImages[index % PlaceHolderImages.length]?.imageUrl
+                );
 
                 return (
                   <Card
@@ -211,12 +257,22 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
                     <div className="md:flex">
                       {/* Program Image */}
                       <div className="relative md:w-80 h-64 md:h-auto">
-                        <Image
-                          src={program.coverImageUrl || PlaceHolderImages[index]?.imageUrl || ""}
-                          alt={programTitle}
-                          fill
-                          className="object-cover"
-                        />
+                        {programImageUrl !== DEFAULT_FALLBACK_IMAGE ? (
+                          <Image
+                            src={programImageUrl}
+                            alt={safeProgramTitle}
+                            fill
+                            className="object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+                            <Heart className="h-16 w-16 text-muted-foreground/30" />
+                          </div>
+                        )}
                         {program.zakatSupported && (
                           <div className="absolute top-4 left-4">
                             <ZakatBadge supported={true} />

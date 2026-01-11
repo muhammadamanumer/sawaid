@@ -23,7 +23,6 @@ export interface PathDocument extends AppwriteDocument {
     descriptionAr: string | null;
     icon: string;
     coverImageUrl: string | null;
-    displayOrder: number; // Renamed from order_priority
     isActive: boolean;    // Changed from status string to boolean
 }
 
@@ -39,7 +38,6 @@ export interface ProgramDocument extends AppwriteDocument {
     descriptionAr: string | null;
     coverImageUrl: string | null;
     zakatSupported: boolean;
-    displayOrder: number;
     isActive: boolean; // Changed from status string to boolean
 }
 
@@ -104,7 +102,9 @@ export interface MediaAssetDocument extends AppwriteDocument {
     altText: string | null;
     tags: string[];
     campaignId: string | null;
-    displayOrder: number;
+    duration?: number;
+    fileSize?: number;
+    mimeType?: string;
 }
 
 // 7. Post Collection (News/Updates)
