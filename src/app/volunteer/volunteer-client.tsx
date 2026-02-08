@@ -20,12 +20,24 @@ import { ensureAnonymousSession } from "@/lib/appwrite";
 import { getVolunteerPositions } from "@/services/volunteer-positions";
 
 const volunteerSchema = z.object({
-    firstName: z.string().min(2, { message: "First name is required" }),
-    lastName: z.string().min(2, { message: "Last name is required" }),
+    firstName: z.string().min(2, { message: "First name must be at least 2 characters" }).max(64, { message: "First name must not exceed 64 characters" }),
+    lastName: z.string().min(2, { message: "Last name must be at least 2 characters" }).max(64, { message: "Last name must not exceed 64 characters" }),
     email: z.string().email({ message: "Please enter a valid email address" }),
-    phoneNumber: z.string().optional(),
-    positionOfInterest: z.string().min(1, { message: "Please select a position" }),
-    message: z.string().min(0, { message: "Motivation message should be at least 10 characters" }),
+    phone: z.string().min(7, { message: "Please enter a valid phone number" }).max(50, { message: "Phone number must not exceed 50 characters" }),
+    positionId: z.string().min(1, { message: "Please select a position" }),
+    country: z.string().min(2, { message: "Please enter your country" }).max(64, { message: "Country must not exceed 64 characters" }),
+    dateOfBirth: z.string().refine((date) => {
+        const birthDate = new Date(date);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        return age >= 16 && age <= 100;
+    }, { message: "You must be at least 16 years old" }),
+    qualification: z.string().min(2, { message: "Please enter your qualification" }).max(64, { message: "Qualification must not exceed 64 characters" }),
+    currentOccupation: z.string().min(2, { message: "Please enter your current occupation" }).max(64, { message: "Occupation must not exceed 64 characters" }),
+    weeklyHours: z.number().min(1, { message: "Please enter at least 1 hour per week" }).max(168, { message: "Cannot exceed 168 hours per week" }),
+    skills: z.string().max(256, { message: "Skills must not exceed 256 characters" }).optional(),
+    volunteerExperience: z.string().max(256, { message: "Experience must not exceed 256 characters" }).optional(),
+    message: z.string().max(2000, { message: "Message must not exceed 2000 characters" }).optional(),
 });
 
 interface VolunteerClientProps {
@@ -44,8 +56,15 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
         firstName: "",
         lastName: "",
         email: "",
-        phoneNumber: "",
-        positionOfInterest: "",
+        phone: "",
+        positionId: "",
+        country: "",
+        dateOfBirth: "",
+        qualification: "",
+        currentOccupation: "",
+        weeklyHours: 0,
+        skills: "",
+        volunteerExperience: "",
         message: "",
     });
 
@@ -63,32 +82,68 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setFormErrors({});
 
-        // Validate the form data
         try {
-            volunteerSchema.parse(formData);  // This will throw an error if validation fails
-            // Simulate form submission
-            const response = await submitVolunteerApplication(formData);
+            // Validate the form data
+            const validatedData = volunteerSchema.parse({
+                ...formData,
+                weeklyHours: Number(formData.weeklyHours) || 0,
+            });
+            
+            // Submit the application
+            const response = await submitVolunteerApplication(validatedData);
+            
+            console.log("Volunteer application submitted:", response);
+            
             toast({
                 title: language === 'ar' ? 'تم الإرسال بنجاح!' : 'Submitted Successfully!',
                 description: language === 'ar' ? 'شكراً لتقديمك. سنكون على اتصال قريباً.' : 'Thank you for applying. We will be in touch soon.',
                 duration: 5000,
                 variant: 'default',
             });
-            console.log(response);
+            
             // Reset form
             setFormData({
                 firstName: "",
                 lastName: "",
                 email: "",
-                phoneNumber: "",
-                positionOfInterest: "",
+                phone: "",
+                positionId: "",
+                country: "",
+                dateOfBirth: "",
+                qualification: "",
+                currentOccupation: "",
+                weeklyHours: 0,
+                skills: "",
+                volunteerExperience: "",
                 message: "",
             });
-            setIsSubmitting(false);
         } catch (error: any) {
             console.error("Volunteer Form submission error:", error);
-            setFormErrors(error.message); // Extract error messages from Zod validation error
+            
+            // Handle Zod validation errors
+            if (error.errors) {
+                const zodErrors: any = {};
+                error.errors.forEach((err: any) => {
+                    const field = err.path[0];
+                    if (!zodErrors[field]) {
+                        zodErrors[field] = [];
+                    }
+                    zodErrors[field].push(err.message);
+                });
+                setFormErrors(zodErrors);
+            } 
+            // Handle Appwrite/API errors
+            else {
+                toast({
+                    title: language === 'ar' ? 'فشل الإرسال' : 'Submission Failed',
+                    description: error.message || (language === 'ar' ? 'حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.' : 'An error occurred while submitting your application. Please try again.'),
+                    duration: 5000,
+                    variant: 'destructive',
+                });
+            }
+        } finally {
             setIsSubmitting(false);
         }
     };
@@ -301,28 +356,183 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                     {/* phoneNumber */}
                                     <div className="space-y-2.5">
                                         <Label className="font-semibold">
-                                            {t('volunteer.formPhoneLabel')}
+                                            {t('volunteer.formPhoneLabel')} <span className="text-destructive">*</span>
                                         </Label>
                                         <Input
-                                            name="phoneNumber"
+                                            name="phone"
                                             type="tel"
-                                            value={formData.phoneNumber}
+                                            value={formData.phone}
                                             onChange={handleChange}
                                             placeholder="(123) 456-7890"
                                             className="h-12 rounded-xl border-2"
+                                            required
                                         />
+                                        {getError("phone") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("phone")}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Country */}
+                                    <div className="space-y-2.5">
+                                        <Label className="font-semibold">
+                                            {t('volunteer.formCountryLabel')} <span className="text-destructive">*</span>
+                                        </Label>
+                                        <Input
+                                            name="country"
+                                            type="text"
+                                            value={formData.country}
+                                            onChange={handleChange}
+                                            placeholder={language === 'ar' ? 'مثال: الأردن' : 'e.g., Jordan'}
+                                            className="h-12 rounded-xl border-2"
+                                            required
+                                        />
+                                        {getError("country") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("country")}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Date of Birth */}
+                                    <div className="space-y-2.5">
+                                        <Label className="font-semibold">
+                                            {t('volunteer.formDateOfBirthLabel')} <span className="text-destructive">*</span>
+                                        </Label>
+                                        <Input
+                                            name="dateOfBirth"
+                                            type="date"
+                                            value={formData.dateOfBirth}
+                                            onChange={handleChange}
+                                            className="h-12 rounded-xl border-2"
+                                            max={new Date(new Date().setFullYear(new Date().getFullYear() - 16)).toISOString().split('T')[0]}
+                                            required
+                                        />
+                                        {getError("dateOfBirth") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("dateOfBirth")}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Qualification */}
+                                    <div className="space-y-2.5">
+                                        <Label className="font-semibold">
+                                            {t('volunteer.formQualificationLabel')} <span className="text-destructive">*</span>
+                                        </Label>
+                                        <Input
+                                            name="qualification"
+                                            type="text"
+                                            value={formData.qualification}
+                                            onChange={handleChange}
+                                            placeholder={language === 'ar' ? 'مثال: بكالوريوس في علوم الحاسوب' : 'e.g., Bachelor of Computer Science'}
+                                            className="h-12 rounded-xl border-2"
+                                            required
+                                        />
+                                        {getError("qualification") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("qualification")}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Current Occupation */}
+                                    <div className="space-y-2.5">
+                                        <Label className="font-semibold">
+                                            {t('volunteer.formCurrentOccupationLabel')} <span className="text-destructive">*</span>
+                                        </Label>
+                                        <Input
+                                            name="currentOccupation"
+                                            type="text"
+                                            value={formData.currentOccupation}
+                                            onChange={handleChange}
+                                            placeholder={language === 'ar' ? 'مثال: مهندس برمجيات' : 'e.g., Software Engineer'}
+                                            className="h-12 rounded-xl border-2"
+                                            required
+                                        />
+                                        {getError("currentOccupation") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("currentOccupation")}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Weekly Hours */}
+                                    <div className="space-y-2.5">
+                                        <Label className="font-semibold">
+                                            {t('volunteer.formWeeklyHoursLabel')} <span className="text-destructive">*</span>
+                                        </Label>
+                                        <Input
+                                            name="weeklyHours"
+                                            type="number"
+                                            min="1"
+                                            max="168"
+                                            value={formData.weeklyHours || ""}
+                                            onChange={handleChange}
+                                            placeholder={language === 'ar' ? 'مثال: 10' : 'e.g., 10'}
+                                            className="h-12 rounded-xl border-2"
+                                            required
+                                        />
+                                        {getError("weeklyHours") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("weeklyHours")}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Skills (Optional) */}
+                                    <div className="space-y-2.5">
+                                        <Label className="font-semibold">
+                                            {t('volunteer.formSkillsLabel')}
+                                        </Label>
+                                        <Textarea
+                                            name="skills"
+                                            rows={3}
+                                            value={formData.skills}
+                                            onChange={handleChange}
+                                            placeholder={t('volunteer.formSkillsPlaceholder')}
+                                            className="rounded-xl border-2 resize-none"
+                                            maxLength={256}
+                                        />
+                                        {getError("skills") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("skills")}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Volunteer Experience (Optional) */}
+                                    <div className="space-y-2.5">
+                                        <Label className="font-semibold">
+                                            {t('volunteer.formVolunteerExperienceLabel')}
+                                        </Label>
+                                        <Textarea
+                                            name="volunteerExperience"
+                                            rows={3}
+                                            value={formData.volunteerExperience}
+                                            onChange={handleChange}
+                                            placeholder={t('volunteer.formVolunteerExperiencePlaceholder')}
+                                            className="rounded-xl border-2 resize-none"
+                                            maxLength={256}
+                                        />
+                                        {getError("volunteerExperience") && (
+                                            <p className="text-sm text-destructive">
+                                                {getError("volunteerExperience")}
+                                            </p>
+                                        )}
                                     </div>
 
                                     {/* Position */}
                                     <div className="space-y-2.5">
                                         <Label className="font-semibold">
-                                            {t('volunteer.formPositionLabel')}
+                                            {t('volunteer.formPositionLabel')} <span className="text-destructive">*</span>
                                         </Label>
 
                                         <Select
-                                            value={formData.positionOfInterest}
+                                            value={formData.positionId}
                                             onValueChange={(value) =>
-                                                setFormData({ ...formData, positionOfInterest: value })
+                                                setFormData({ ...formData, positionId: value })
                                             }
                                         >
                                             <SelectTrigger className="h-12 rounded-xl border-2">
@@ -346,9 +556,9 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                             </SelectContent>
                                         </Select>
 
-                                        {getError("positionOfInterest") && (
+                                        {getError("positionId") && (
                                             <p className="text-sm text-destructive">
-                                                {getError("positionOfInterest")}
+                                                {getError("positionId")}
                                             </p>
                                         )}
                                     </div>
@@ -365,6 +575,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                             onChange={handleChange}
                                             placeholder={t('volunteer.formMotivationPlaceholder')}
                                             className="rounded-xl border-2 resize-none"
+                                            maxLength={2000}
                                         />
                                         {getError("message") && (
                                             <p className="text-sm text-destructive">

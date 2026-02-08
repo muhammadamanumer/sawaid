@@ -201,22 +201,32 @@ This document defines the complete database schema for the Sawaid humanitarian o
 
 **Collection ID:** `volunteers`
 
-| Attribute         | Type     | Required | Default | Description                              |
-| ----------------- | -------- | -------- | ------- | ---------------------------------------- |
-| `$id`             | string   | Auto     | -       | Unique identifier                        |
-| `fullName`        | string   | ✅        | -       | Volunteer full name                      |
-| `email`           | string   | ✅        | -       | Contact email                            |
-| `phone`           | string   | ❌        | null    | Phone number                             |
-| `positionId`      | string   | ❌        | null    | Desired volunteer position               |
-| `skills`          | string[] | ❌        | []      | Skills/expertise                         |
-| `availability`    | string   | ❌        | null    | Availability description                 |
-| `message`         | string   | ❌        | null    | Application message                      |
-| `status`          | string   | ❌        | new     | new, reviewed, accepted, rejected        |
-| `$createdAt`      | datetime | Auto     | -       | Application date                         |
+| Attribute             | Type     | Required | Default | Description                              |
+| --------------------- | -------- | -------- | ------- | ---------------------------------------- |
+| `$id`                 | string   | Auto     | -       | Unique identifier                        |
+| `firstName`           | string   | ✅        | -       | Volunteer first name (max 64 chars)      |
+| `lastName`            | string   | ✅        | -       | Volunteer last name (max 64 chars)       |
+| `email`               | email    | ✅        | -       | Contact email                            |
+| `phone`               | string   | ❌        | null    | Phone number (max 50 chars)              |
+| `positionId`          | string   | ✅        | -       | Desired volunteer position (max 50)      |
+| `country`             | string   | ✅        | -       | Country of residence (max 64 chars)      |
+| `dateOfBirth`         | datetime | ✅        | -       | Date of birth (minimum age 16)           |
+| `qualification`       | string   | ✅        | -       | Educational qualification (max 64 chars) |
+| `currentOccupation`   | string   | ✅        | -       | Current occupation (max 64 chars)        |
+| `weekyHours`          | double   | ✅        | -       | Available hours per week (min 0)         |
+| `skills`              | string   | ❌        | null    | Skills/expertise (max 256 chars)         |
+| `volunteerExperience` | string   | ❌        | null    | Previous volunteer experience (max 256)  |
+| `message`             | string   | ❌        | null    | Application message (max 2000 chars)     |
+| `$createdAt`          | datetime | Auto     | -       | Application date                         |
 
 **Indexes:**
-- `status` (for filtering applications)
 - `email` (unique, for duplicate prevention)
+- `positionId` (for filtering by position)
+
+**Notes:**
+- Field name `weekyHours` in database is intentional (matches existing schema)
+- Age validation: minimum 16 years old
+- All text fields have maximum length constraints for data integrity
 
 ---
 

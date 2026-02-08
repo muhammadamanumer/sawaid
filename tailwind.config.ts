@@ -13,6 +13,7 @@ export default {
         body: ['Poppins', 'Cairo', 'sans-serif'],
         headline: ['Poppins', 'Cairo', 'sans-serif'],
         arabic: ['Cairo', 'sans-serif'],
+        'sawaid-arabic': ['Sawaid Arabic', 'Cairo', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

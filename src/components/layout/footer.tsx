@@ -1,9 +1,10 @@
 "use client"
 
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Send } from 'lucide-react';
 import { Logo } from '@/components/shared/logo';
 import { useTranslation } from '@/hooks/use-translation';
+import { organizationInfo } from '@/config/organization';
 
 export function Footer() {
   const { t, navLinks } = useTranslation();
@@ -63,34 +64,50 @@ export function Footer() {
                 <span className="h-0.5 w-8 bg-accent rounded-full"></span>
               </h3>
               <div className="flex gap-4">
-                <Link 
-                  href="#" 
-                  aria-label="Facebook" 
-                  className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
-                >
-                  <Facebook className="h-6 w-6" />
-                </Link>
-                <Link 
-                  href="#" 
-                  aria-label="Twitter" 
-                  className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
-                >
-                  <Twitter className="h-6 w-6" />
-                </Link>
-                <Link 
-                  href="#" 
-                  aria-label="Instagram" 
-                  className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
-                >
-                  <Instagram className="h-6 w-6" />
-                </Link>
-                <Link 
-                  href="#" 
-                  aria-label="LinkedIn" 
-                  className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
-                >
-                  <Linkedin className="h-6 w-6" />
-                </Link>
+                {organizationInfo.social.facebook && (
+                  <Link 
+                    href={organizationInfo.social.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Facebook" 
+                    className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
+                  >
+                    <Facebook className="h-6 w-6" />
+                  </Link>
+                )}
+                {organizationInfo.social.twitter && (
+                  <Link 
+                    href={organizationInfo.social.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Twitter" 
+                    className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
+                  >
+                    <Twitter className="h-6 w-6" />
+                  </Link>
+                )}
+                {organizationInfo.social.instagram && (
+                  <Link 
+                    href={organizationInfo.social.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram" 
+                    className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
+                  >
+                    <Instagram className="h-6 w-6" />
+                  </Link>
+                )}
+                {organizationInfo.social.telegram && (
+                  <Link 
+                    href={organizationInfo.social.telegram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Telegram" 
+                    className="text-primary-foreground/85 hover:text-accent transition-all duration-300 hover:scale-110 hover:-translate-y-1 p-2 rounded-lg hover:bg-primary-foreground/10"
+                  >
+                    <Send className="h-6 w-6" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>

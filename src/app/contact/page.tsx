@@ -198,7 +198,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.hqTitle')}</h3>
-                    <p className="text-muted-foreground text-sm">Doha, State of Qatar</p>
+                    <p className="text-muted-foreground text-sm">Karam Al-Shami Neighborhood, Homs, Syria</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 group">
@@ -216,7 +216,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.phoneSupportTitle')}</h3>
-                    <a href="tel:+97444123456" className="text-muted-foreground text-sm hover:text-primary transition-colors" dir="ltr">+974 4412 3456</a>
+                    <a href="tel:+97444123456" className="text-muted-foreground text-sm hover:text-primary transition-colors" dir="ltr">+963 982 369 654</a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 group">
@@ -226,13 +226,13 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.whatsappTitle')}</h3>
                     <a
-                      href="https://wa.me/97444123456"
+                      href="https://wa.me/+90538707852"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-muted-foreground text-sm hover:text-primary transition-colors"
                       dir="ltr"
                     >
-                      +974 4412 3456
+                      +90 538 707 852
                     </a>
                   </div>
                 </div>
