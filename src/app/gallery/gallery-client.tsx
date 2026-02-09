@@ -398,7 +398,7 @@ export function GalleryClient({ mediaAssets }: GalleryClientProps) {
         )}
 
         {/* Press Kit CTA */}
-        <section className="mt-20 animate-fadeInUp animation-delay-700">
+        {/* <section className="mt-20 animate-fadeInUp animation-delay-700">
           <Card className="shadow-modern-2xl border-border/50 bg-gradient-to-br from-primary/5 to-accent/5">
             <CardContent className="p-12 text-center">
               <h2 className="text-3xl font-headline font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-br from-primary to-accent">
@@ -421,7 +421,7 @@ export function GalleryClient({ mediaAssets }: GalleryClientProps) {
               </div>
             </CardContent>
           </Card>
-        </section>
+        </section> */}
       </div>
       </div>
     </>

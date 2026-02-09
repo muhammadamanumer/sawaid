@@ -90,3 +90,10 @@ export {
     getDonationByPaymentRef 
 } from './donations';
 export type { CreateDonationData } from './donations';
+
+// Transparency services
+export { 
+    getFinancialAllocation,
+    getTransparencyStats 
+} from './transparency';
+export type { FinancialAllocation, TransparencyStats } from './transparency';

@@ -3,16 +3,18 @@ import { getPaths } from "@/services/path";
 import { getPrograms } from "@/services/programs";
 import { getFeaturedCampaigns } from "@/services/campaigns";
 import { getStats } from "@/services/stats";
+import { getRecentPosts } from "@/services/posts";
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function Home() {
   // Fetch all data in parallel
-  const [paths, programs, campaigns, stats] = await Promise.all([
+  const [paths, programs, campaigns, stats, posts] = await Promise.all([
     getPaths(),
     getPrograms(),
     getFeaturedCampaigns(),
     getStats(),
+    getRecentPosts(3),
   ]);
 
   return (
@@ -21,6 +23,7 @@ export default async function Home() {
       programs={programs}
       campaigns={campaigns}
       stats={stats}
+      posts={posts}
     />
   );
 }

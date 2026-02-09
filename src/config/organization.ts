@@ -21,12 +21,12 @@ export const organizationInfo = {
     email: 'info@sawaidalislah.org', // Add if available
   },
   
-  // Social Media Links (add as needed)
+  // Social Media Links
   social: {
-    facebook: 'https://facebook.com/sawaidalislah',
-    twitter: 'https://twitter.com/sawaidalislah',
-    instagram: 'https://instagram.com/sawaidalislah',
-    telegram: 'https://t.me/sawaidalislah',
+    facebook: 'https://www.facebook.com/sawaidalislah/',
+    twitter: 'https://x.com/sawaidalislah',
+    instagram: 'https://www.instagram.com/sawaidalislah/',
+    telegram: 'https://web.telegram.org/a/?account=2#-1003308570148',
   },
   
   // Legal Information

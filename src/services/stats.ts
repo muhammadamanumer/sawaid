@@ -1,5 +1,5 @@
 import { COLLECTIONS, DATABASE_ID, Query, tablesDB } from "@/lib/appwrite";
-import { CampaignDocument } from "@/types/appwrite";
+import { CampaignDocument, DonationDocument, VolunteerDocument } from "@/types/appwrite";
 
 /**
  * ============================================================================
@@ -7,11 +7,12 @@ import { CampaignDocument } from "@/types/appwrite";
  * ============================================================================
  * 
  * Aggregation and statistics for homepage counters and dashboards.
+ * All data is fetched dynamically from the database.
  * 
  * COST OPTIMIZATION:
- * - Single API call fetches campaigns (we calculate stats client-side)
+ * - Parallel API calls to reduce latency
  * - Use Query.select() to only fetch fields needed for calculation
- * - Heavy caching at page level (revalidate = 300+ seconds for stats)
+ * - Heavy caching at page level (revalidate = 60+ seconds for stats)
  * ============================================================================
  */
 
@@ -19,28 +20,27 @@ export interface SiteStats {
     totalCampaigns: number;
     totalPrograms: number;
     totalRaised: number;
-    beneficiariesHelped: number;
-    volunteersActive: number;
+    totalDonors: number;
+    totalVolunteers: number;
 }
 
 // ============ GET SITE STATS ============
 /**
  * Fetches aggregated stats for the homepage.
- * Uses parallel fetching for efficiency.
- * 
- * Note: For free tier optimization, we fetch minimal data and calculate client-side
+ * Uses parallel fetching for efficiency - all data is dynamic from database.
  */
 export async function getStats(): Promise<SiteStats> {
     try {
-        // Parallel fetch - 2 API calls instead of multiple
-        const [campaignsRes, programsRes] = await Promise.all([
+        debugger
+        // Parallel fetch - 4 API calls for all stats
+        const [campaignsRes, programsRes, donationsRes, volunteersRes] = await Promise.all([
             tablesDB.listRows({
                 databaseId: DATABASE_ID,
                 tableId: COLLECTIONS.CAMPAIGNS,
                 queries: [
-                    Query.limit(100),
-                    // Only select fields needed for calculation
-                    Query.select(['raisedAmount', 'isActive']),
+                    Query.equal('isActive', true),
+                    Query.limit(500),
+                    Query.select(['raisedAmount']),
                 ],
             }),
             tablesDB.listRows({
@@ -50,22 +50,41 @@ export async function getStats(): Promise<SiteStats> {
                     Query.limit(1), // We only need the total count
                 ],
             }),
+            tablesDB.listRows({
+                databaseId: DATABASE_ID,
+                tableId: COLLECTIONS.DONATIONS,
+                queries: [
+                    Query.equal('status', 'completed'),
+                    Query.limit(5000),
+                    Query.select(['donorEmail', 'amount']),
+                ],
+            }),
+            tablesDB.listRows({
+                databaseId: DATABASE_ID,
+                tableId: COLLECTIONS.VOLUNTEERS,
+                queries: [
+                    Query.limit(1), // We only need the total count
+                ],
+            }),
         ]);
 
         // Calculate total raised from campaigns
-        const campaigns = campaignsRes.rows as unknown as Pick<CampaignDocument, 'raisedAmount' | 'isActive'>[];
+        const campaigns = campaignsRes.rows as unknown as Pick<CampaignDocument, 'raisedAmount'>[];
         const totalRaised = campaigns.reduce(
             (sum, c) => sum + (c.raisedAmount || 0), 
             0
         );
 
+        // Count unique donors by email
+        const donations = donationsRes.rows as unknown as Pick<DonationDocument, 'donorEmail'>[];
+        const uniqueDonors = new Set(donations.map(d => d.donorEmail).filter(Boolean));
+
         return {
             totalCampaigns: campaignsRes.total,
             totalPrograms: programsRes.total,
             totalRaised,
-            // Static values - update these from a dedicated stats collection if needed
-            beneficiariesHelped: 15420,
-            volunteersActive: 312,
+            totalDonors: uniqueDonors.size,
+            totalVolunteers: volunteersRes.total,
         };
     } catch (error) {
         console.error('Error fetching stats:', error);
@@ -74,8 +93,8 @@ export async function getStats(): Promise<SiteStats> {
             totalCampaigns: 0,
             totalPrograms: 0,
             totalRaised: 0,
-            beneficiariesHelped: 0,
-            volunteersActive: 0,
+            totalDonors: 0,
+            totalVolunteers: 0,
         };
     }
 }

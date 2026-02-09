@@ -18,55 +18,60 @@ import {
 } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar, ExternalLink } from "lucide-react";
-import { financialData } from "@/lib/data";
+import { Download, FileText, ExternalLink, Users, Heart, TrendingUp } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import type { ReportDocument } from "@/types/appwrite";
 import type { SiteStats } from "@/services/stats";
+import type { FinancialAllocation, TransparencyStats } from "@/services/transparency";
 
-// Define colors for chart entries
-const CHART_COLORS = {
-  "Food & Water Programs": "hsl(var(--chart-1))",
-  "Medical Aid": "hsl(var(--chart-2))",
-  "Education & Child Support": "hsl(var(--chart-3))",
-  "Infrastructure & Shelter": "hsl(var(--chart-4))",
-  "Administration & Fundraising": "hsl(var(--chart-5))",
-} as const;
-
-const chartConfig = {
-  amount: {
-    label: "Amount (QAR)",
-  },
-  "Food & Water Programs": {
-    label: "Food & Water",
-    color: CHART_COLORS["Food & Water Programs"],
-  },
-  "Medical Aid": {
-    label: "Medical Aid",
-    color: CHART_COLORS["Medical Aid"],
-  },
-  "Education & Child Support": {
-    label: "Education",
-    color: CHART_COLORS["Education & Child Support"],
-  },
-  "Infrastructure & Shelter": {
-    label: "Infrastructure",
-    color: CHART_COLORS["Infrastructure & Shelter"],
-  },
-  "Administration & Fundraising": {
-    label: "Admin & Fundraising",
-    color: CHART_COLORS["Administration & Fundraising"],
-  },
-} satisfies ChartConfig;
+// Dynamic chart colors based on HSL chart variables
+const CHART_COLORS = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+  "hsl(220, 70%, 50%)", // Additional colors if needed
+  "hsl(280, 65%, 60%)",
+  "hsl(340, 75%, 55%)",
+];
 
 interface TransparencyClientProps {
   reports: ReportDocument[];
   stats: SiteStats;
+  financialAllocation: FinancialAllocation[];
+  transparencyStats: TransparencyStats;
 }
 
-export function TransparencyClient({ reports, stats }: TransparencyClientProps) {
+export function TransparencyClient({ reports, stats, financialAllocation, transparencyStats }: TransparencyClientProps) {
   const { t, language } = useTranslation();
-  const totalAmount = financialData.reduce((acc, item) => acc + item.amount, 0);
+  
+  // Calculate total from dynamic allocation data
+  const totalAmount = financialAllocation.reduce((acc, item) => acc + item.amount, 0);
+  
+  // Prepare chart data with localized labels
+  const chartData = financialAllocation.map((item, index) => ({
+    category: language === 'ar' ? item.categoryAr : item.category,
+    amount: item.amount,
+    percentage: item.percentage,
+    fill: CHART_COLORS[index % CHART_COLORS.length],
+  }));
+
+  // Build dynamic chart config
+  const chartConfig: ChartConfig = {
+    amount: {
+      label: language === 'ar' ? 'المبلغ (ر.ق)' : 'Amount (QAR)',
+    },
+    ...Object.fromEntries(
+      chartData.map((item, index) => [
+        item.category,
+        {
+          label: item.category,
+          color: CHART_COLORS[index % CHART_COLORS.length],
+        },
+      ])
+    ),
+  };
 
   // Group reports by type
   const annualReports = reports.filter(r => r.reportType === 'annual');
@@ -109,35 +114,114 @@ export function TransparencyClient({ reports, stats }: TransparencyClientProps) 
         </div>
 
         {/* Key Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 animate-fadeInUp animation-delay-150">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fadeInUp animation-delay-150">
           <Card className="shadow-modern-lg border-border/50 text-center">
             <CardContent className="pt-6">
-              <p className="text-4xl font-bold text-primary mb-2">
+              <div className="flex justify-center mb-3">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <Heart className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-primary mb-2">
                 {formatCurrency(stats.totalRaised)}
               </p>
-              <p className="text-muted-foreground">
-                {language === 'ar' ? 'إجمالي التبرعات' : 'Total Donations'}
+              <p className="text-muted-foreground text-sm">
+                {language === 'ar' ? 'إجمالي التبرعات' : 'Total Raised'}
               </p>
             </CardContent>
           </Card>
           <Card className="shadow-modern-lg border-border/50 text-center">
             <CardContent className="pt-6">
-              <p className="text-4xl font-bold text-primary mb-2">
+              <div className="flex justify-center mb-3">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-primary mb-2">
+                {transparencyStats.totalDonors.toLocaleString()}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {language === 'ar' ? 'المتبرعون' : 'Total Donors'}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="shadow-modern-lg border-border/50 text-center">
+            <CardContent className="pt-6">
+              <div className="flex justify-center mb-3">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-primary mb-2">
                 {stats.totalCampaigns}
               </p>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 {language === 'ar' ? 'الحملات النشطة' : 'Active Campaigns'}
               </p>
             </CardContent>
           </Card>
           <Card className="shadow-modern-lg border-border/50 text-center">
             <CardContent className="pt-6">
-              <p className="text-4xl font-bold text-primary mb-2">
-                {stats.beneficiariesHelped.toLocaleString()}+
+              <div className="flex justify-center mb-3">
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <Heart className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-primary mb-2">
+                {formatCurrency(transparencyStats.avgDonationAmount)}
               </p>
-              <p className="text-muted-foreground">
-                {language === 'ar' ? 'المستفيدين' : 'Beneficiaries'}
+              <p className="text-muted-foreground text-sm">
+                {language === 'ar' ? 'متوسط التبرع' : 'Avg. Donation'}
               </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 animate-fadeInUp animation-delay-175">
+          <Card className="shadow-modern-lg border-border/50">
+            <CardContent className="pt-6 flex items-center gap-4">
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
+                <Heart className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(transparencyStats.zakatDonations)}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {language === 'ar' ? 'تبرعات الزكاة' : 'Zakat Donations'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="shadow-modern-lg border-border/50">
+            <CardContent className="pt-6 flex items-center gap-4">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                <Heart className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(transparencyStats.generalDonations)}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {language === 'ar' ? 'تبرعات عامة' : 'General Donations'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="shadow-modern-lg border-border/50">
+            <CardContent className="pt-6 flex items-center gap-4">
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+                <Users className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">
+                  {transparencyStats.recurringDonors.toLocaleString()}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {language === 'ar' ? 'متبرعون شهريون' : 'Recurring Donors'}
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -207,88 +291,122 @@ export function TransparencyClient({ reports, stats }: TransparencyClientProps) 
           </Card>
         )}
 
-        <div className="grid md:grid-cols-2 gap-10 animate-fadeInUp animation-delay-300">
-          <Card className="shadow-modern-2xl border-border/50">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-2xl font-headline">{t('transparency.allocationTitle')}</CardTitle>
-              <CardDescription className="text-base">{t('transparency.allocationDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
-                <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={financialData} layout="vertical" margin={{ left: 20, right: 20 }}>
-                    <CartesianGrid horizontal={false} />
-                    <YAxis
-                      dataKey="category"
-                      type="category"
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => {
-                        // Simplify labels for chart
-                        const shortLabels: Record<string, string> = {
-                          'Food & Water Programs': language === 'ar' ? 'الغذاء والماء' : 'Food & Water',
-                          'Medical Aid': language === 'ar' ? 'الإعانة الطبية' : 'Medical Aid',
-                          'Education & Child Support': language === 'ar' ? 'التعليم' : 'Education',
-                          'Infrastructure & Shelter': language === 'ar' ? 'البنية التحتية' : 'Infrastructure',
-                          'Administration & Fundraising': language === 'ar' ? 'الإدارة' : 'Admin',
-                        };
-                        return shortLabels[value] || value;
-                      }}
-                      className="text-xs"
-                      width={100}
-                    />
-                    <XAxis dataKey="amount" type="number" hide />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-                    <Bar dataKey="amount" radius={5} layout="vertical">
-                      {financialData.map((entry) => (
-                        <Cell key={`cell-${entry.category}`} fill={CHART_COLORS[entry.category as keyof typeof CHART_COLORS]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-
-          <Card className="flex flex-col shadow-modern-2xl border-border/50">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-2xl font-headline">{t('transparency.percentageTitle')}</CardTitle>
-              <CardDescription className="text-base">{t('transparency.percentageDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 flex items-center justify-center pb-0">
-              <ChartContainer config={chartConfig} className="mx-auto aspect-square h-full max-h-[350px]">
-                <PieChart>
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel nameKey="category" formatter={(value) => [`${value}%`]} />}
-                  />
-                  <Pie
-                    data={financialData}
-                    dataKey="percentage"
-                    nameKey="category"
-                    innerRadius={60}
-                    strokeWidth={5}
-                  >
-                    {financialData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={CHART_COLORS[entry.category as keyof typeof CHART_COLORS]}
+        {/* Charts Section */}
+        {chartData.length > 0 ? (
+          <div className="grid md:grid-cols-2 gap-10 animate-fadeInUp animation-delay-300">
+            <Card className="shadow-modern-2xl border-border/50">
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-2xl font-headline">{t('transparency.allocationTitle')}</CardTitle>
+                <CardDescription className="text-base">{t('transparency.allocationDescription')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height={Math.max(350, chartData.length * 50)}>
+                    <BarChart data={chartData} layout="vertical" margin={{ left: 20, right: 20 }}>
+                      <CartesianGrid horizontal={false} />
+                      <YAxis
+                        dataKey="category"
+                        type="category"
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(value) => {
+                          // Truncate long labels
+                          return value.length > 15 ? value.substring(0, 15) + '...' : value;
+                        }}
+                        className="text-xs"
+                        width={120}
                       />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ChartContainer>
+                      <XAxis dataKey="amount" type="number" hide />
+                      <ChartTooltip 
+                        cursor={false} 
+                        content={<ChartTooltipContent formatter={(value) => formatCurrency(Number(value))} />} 
+                      />
+                      <Bar dataKey="amount" radius={5} layout="vertical">
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="flex flex-col shadow-modern-2xl border-border/50">
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-2xl font-headline">{t('transparency.percentageTitle')}</CardTitle>
+                <CardDescription className="text-base">{t('transparency.percentageDescription')}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 flex items-center justify-center pb-0">
+                <ChartContainer config={chartConfig} className="mx-auto aspect-square h-full max-h-[350px]">
+                  <PieChart>
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel nameKey="category" formatter={(value) => [`${value}%`]} />}
+                    />
+                    <Pie
+                      data={chartData}
+                      dataKey="percentage"
+                      nameKey="category"
+                      innerRadius={60}
+                      strokeWidth={5}
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={entry.fill}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ChartContainer>
+              </CardContent>
+              <CardFooter className="flex-col gap-2 text-sm pt-4">
+                <div className="flex items-center justify-center gap-2 font-medium leading-none">
+                  {t('transparency.totalFunds')}: {formatCurrency(totalAmount)}
+                </div>
+                <div className="leading-none text-muted-foreground text-center">
+                  {t('transparency.totalFundsDescription')}
+                </div>
+              </CardFooter>
+            </Card>
+          </div>
+        ) : (
+          <Card className="mb-12 shadow-modern-2xl border-border/50 animate-fadeInUp animation-delay-300">
+            <CardContent className="py-12 text-center">
+              <p className="text-muted-foreground text-lg">
+                {language === 'ar' 
+                  ? 'لا توجد بيانات مالية متاحة حالياً. ستظهر البيانات هنا بمجرد تسجيل التبرعات.' 
+                  : 'No financial data available yet. Data will appear here once donations are recorded.'}
+              </p>
             </CardContent>
-            <CardFooter className="flex-col gap-2 text-sm pt-4">
-              <div className="flex items-center justify-center gap-2 font-medium leading-none">
-                {t('transparency.totalFunds')}: {formatCurrency(totalAmount)}
-              </div>
-              <div className="leading-none text-muted-foreground text-center">
-                {t('transparency.totalFundsDescription')}
-              </div>
-            </CardFooter>
           </Card>
-        </div>
+        )}
+
+        {/* Category Breakdown Legend */}
+        {chartData.length > 0 && (
+          <div className="mt-8 animate-fadeInUp animation-delay-350">
+            <h3 className="text-xl font-headline font-bold mb-4">
+              {language === 'ar' ? 'تفاصيل التوزيع' : 'Allocation Breakdown'}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {chartData.map((item, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                  <div 
+                    className="w-4 h-4 rounded-full flex-shrink-0" 
+                    style={{ backgroundColor: item.fill }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{item.category}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {formatCurrency(item.amount)} ({item.percentage}%)
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* CTA Section */}
         <div className="mt-16 text-center animate-fadeInUp animation-delay-400">

@@ -1,12 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ZakatBadge } from "@/components/shared/zakat-badge";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   GraduationCap,
   Users,
@@ -17,6 +23,12 @@ import {
   Target,
   ArrowRight,
   Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  Globe,
+  Layers,
+  XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -50,8 +62,52 @@ function getImageUrl(primaryUrl: string | null | undefined, fallbackUrl?: string
   return DEFAULT_FALLBACK_IMAGE;
 }
 
+/**
+ * Formats text with proper line breaks and paragraph rendering
+ * Handles RTL text and preserves intentional formatting
+ */
+function formatDescription(text: string | null | undefined, isRtl: boolean): React.ReactNode {
+  if (!text) return null;
+  
+  // Split by double newlines (paragraphs) and single newlines
+  const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim());
+  
+  return (
+    <div className={`space-y-4 ${isRtl ? 'text-right' : 'text-left'}`} dir={isRtl ? 'rtl' : 'ltr'}>
+      {paragraphs.map((paragraph, idx) => {
+        // Handle single line breaks within paragraphs
+        const lines = paragraph.split(/\n/).filter(l => l.trim());
+        return (
+          <p key={idx} className="leading-relaxed">
+            {lines.map((line, lineIdx) => (
+              <span key={lineIdx}>
+                {line.trim()}
+                {lineIdx < lines.length - 1 && <br />}
+              </span>
+            ))}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export function PathDetailClient({ path, programs }: PathDetailClientProps) {
   const { t, language } = useTranslation();
+  const [expandedPrograms, setExpandedPrograms] = useState<Set<string>>(new Set());
+  const isRtl = language === 'ar';
+
+  const toggleProgramExpanded = (programId: string) => {
+    setExpandedPrograms(prev => {
+      const next = new Set(prev);
+      if (next.has(programId)) {
+        next.delete(programId);
+      } else {
+        next.add(programId);
+      }
+      return next;
+    });
+  };
   
   const title = language === 'ar' ? path.titleAr : path.titleEn;
   const description = language === 'ar' ? path.descriptionAr : path.descriptionEn;
@@ -232,9 +288,12 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
               </p>
             </div>
 
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {programs.map((program, index) => {
                 const programTitle = language === 'ar' ? program.titleAr : program.titleEn;
+                const programSummary = language === 'ar' 
+                  ? (program.summaryAr || '') 
+                  : (program.summaryEn || '');
                 const programDescription = language === 'ar' 
                   ? (program.descriptionAr || program.summaryAr) 
                   : (program.descriptionEn || program.summaryEn);
@@ -248,99 +307,167 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
                   PlaceHolderImages[index % PlaceHolderImages.length]?.imageUrl
                 );
 
+                const isExpanded = expandedPrograms.has(program.$id);
+                const hasDetailedDescription = programDescription && programDescription.length > (programSummary?.length || 0);
+
                 return (
                   <Card
                     key={program.$id}
-                    className="group hover:shadow-modern-xl transition-all duration-300 hover:-translate-y-1 border-2 hover:border-primary/50 overflow-hidden animate-fadeInUp"
+                    className="group flex flex-col overflow-hidden transition-all duration-500 hover:shadow-modern-2xl h-full hover:-translate-y-2 border-border/50 hover:border-primary/30 animate-fadeInUp"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <div className="md:flex">
-                      {/* Program Image */}
-                      <div className="relative md:w-80 h-64 md:h-auto">
+                    {/* Program Image Header - Campaign Card Style */}
+                    <CardHeader className="p-0 relative overflow-hidden">
+                      <div className="relative h-56 w-full block overflow-hidden">
                         {programImageUrl !== DEFAULT_FALLBACK_IMAGE ? (
                           <Image
                             src={programImageUrl}
                             alt={safeProgramTitle}
                             fill
-                            className="object-cover"
+                            className="object-cover transition-transform duration-700 group-hover:scale-110"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                            <Heart className="h-16 w-16 text-muted-foreground/30" />
+                          <div className="w-full h-full bg-gradient-to-br from-primary/10 via-muted to-accent/10 flex items-center justify-center">
+                            <Layers className="h-20 w-20 text-primary/30" />
                           </div>
                         )}
-                        {program.zakatSupported && (
-                          <div className="absolute top-4 left-4">
-                            <ZakatBadge supported={true} />
-                          </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      </div>
+                      
+                      {/* Zakat Badge - Top Left */}
+                      <div className="absolute top-4 left-4">
+                        {program.zakatSupported ? (
+                          <Badge className="bg-primary/95 text-primary-foreground border-0 shadow-modern-md backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5">
+                            <CheckCircle2 className="h-4 w-4" />
+                            <span className="text-xs font-semibold">
+                              {language === 'ar' ? 'يدعم الزكاة' : 'Zakat Eligible'}
+                            </span>
+                          </Badge>
+                        ) : (
+                          <Badge variant="destructive" className="bg-destructive/95 backdrop-blur-sm border-0 shadow-modern-md flex items-center gap-1.5 px-3 py-1.5">
+                            <XCircle className="h-4 w-4" />
+                            <span className="text-xs font-semibold">
+                              {language === 'ar' ? 'صدقة فقط' : 'Sadaqah Only'}
+                            </span>
+                          </Badge>
                         )}
                       </div>
 
-                      {/* Program Details */}
-                      <div className="flex-1">
-                        <CardHeader>
-                          <CardTitle className="text-2xl group-hover:text-primary transition-colors">
-                            {programTitle}
-                          </CardTitle>
-                          <CardDescription className="text-base">
-                            {programDescription}
-                          </CardDescription>
-                        </CardHeader>
+                      {/* Path Badge - Top Right */}
+                      <div className="absolute top-4 right-4">
+                        <Badge variant="outline" className="bg-background/95 backdrop-blur-sm border-border/50 shadow-modern-md flex items-center gap-1.5 px-3 py-1.5">
+                          <Globe className="h-3 w-3" />
+                          <span className="text-xs font-medium">
+                            {language === 'ar' ? path.titleAr : path.titleEn}
+                          </span>
+                        </Badge>
+                      </div>
+                    </CardHeader>
 
-                        <CardContent>
-                          {/* Key Highlights */}
-                          <div className="space-y-2 mb-6">
-                            <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                              {language === 'ar' ? 'أبرز النقاط' : 'Key Highlights'}
-                            </h4>
-                            <div className="space-y-2">
-                              {[
-                                language === 'ar' ? 'تأثير مستدام' : 'Sustainable Impact',
-                                language === 'ar' ? 'إدارة شفافة' : 'Transparent Management',
-                                language === 'ar' ? 'تقارير دورية' : 'Regular Reports',
-                              ].map((highlight, idx) => (
-                                <div key={idx} className="flex items-start gap-2">
-                                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                                  <span className="text-sm">{highlight}</span>
-                                </div>
-                              ))}
+                    {/* Program Content */}
+                    <CardContent className="flex flex-col flex-grow p-6" dir={isRtl ? 'rtl' : 'ltr'}>
+                      <CardTitle className="font-headline text-xl mb-3 leading-tight group-hover:text-primary transition-colors duration-300">
+                        {programTitle}
+                      </CardTitle>
+                      
+                      {/* Summary - Always visible */}
+                      <div className={`text-muted-foreground text-sm flex-grow leading-relaxed mb-4 ${isRtl ? 'text-right' : 'text-left'}`}>
+                        {programSummary ? (
+                          <p className="line-clamp-3">{programSummary}</p>
+                        ) : (
+                          <p className="text-muted-foreground/60 italic">
+                            {language === 'ar' ? 'لا يوجد وصف متاح' : 'No description available'}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Key Highlights */}
+                      <div className="space-y-2 mb-4 mt-auto">
+                        <h4 className={`font-semibold text-xs text-muted-foreground uppercase tracking-wide ${isRtl ? 'text-right' : 'text-left'}`}>
+                          {language === 'ar' ? 'أبرز الميزات' : 'Key Features'}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { icon: TrendingUp, textAr: 'تأثير مستدام', textEn: 'Impact' },
+                            { icon: Target, textAr: 'أهداف واضحة', textEn: 'Goals' },
+                            { icon: Users, textAr: 'شفافية كاملة', textEn: 'Transparent' },
+                            { icon: Calendar, textAr: 'تقارير دورية', textEn: 'Reports' },
+                          ].map((feature, idx) => (
+                            <div key={idx} className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                              <feature.icon className="h-3.5 w-3.5 text-primary shrink-0" />
+                              <span className="text-xs text-muted-foreground">
+                                {language === 'ar' ? feature.textAr : feature.textEn}
+                              </span>
                             </div>
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex flex-wrap gap-3">
-                            <Button asChild className="shadow-modern-md">
-                              <Link href={`/donate?program=${program.slug}`}>
-                                <Heart className="mr-2 h-4 w-4" />
-                                {language === 'ar' ? 'تبرع الآن' : 'Donate Now'}
-                              </Link>
-                            </Button>
-                            <Button variant="outline" className="shadow-modern-md">
-                              {language === 'ar' ? 'اعرف المزيد' : 'Learn More'}
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                          </div>
-                        </CardContent>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+
+                      {/* Expandable Description */}
+                      {hasDetailedDescription && (
+                        <Collapsible open={isExpanded} onOpenChange={() => toggleProgramExpanded(program.$id)}>
+                          <CollapsibleTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              className={`w-full justify-between mb-4 text-primary hover:text-primary/80 hover:bg-primary/5 ${isRtl ? 'flex-row-reverse' : ''}`}
+                            >
+                              <span className="flex items-center gap-2">
+                                {isExpanded ? (
+                                  <ChevronUp className="h-4 w-4" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4" />
+                                )}
+                                {language === 'ar' 
+                                  ? (isExpanded ? 'إخفاء التفاصيل' : 'اعرف المزيد')
+                                  : (isExpanded ? 'Hide Details' : 'Learn More')}
+                              </span>
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="animate-in slide-in-from-top-2 duration-300">
+                            <div className="p-4 rounded-xl bg-muted/50 border border-border/50 mb-4">
+                              <h5 className={`font-semibold text-sm mb-3 flex items-center gap-2 ${isRtl ? 'flex-row-reverse text-right' : ''}`}>
+                                <Sparkles className="h-4 w-4 text-accent" />
+                                {language === 'ar' ? 'تفاصيل البرنامج' : 'Program Details'}
+                              </h5>
+                              <div className="text-sm text-muted-foreground">
+                                {formatDescription(programDescription, isRtl)}
+                              </div>
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      )}
+                    </CardContent>
+
+                    {/* Action Footer - Campaign Card Style */}
+                    <CardFooter className="p-6 pt-0">
+                      <Button asChild variant="accent" className="w-full group-hover:shadow-modern-lg transition-all">
+                        <Link href={`/donate?program=${program.slug}`} className={`flex items-center justify-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                          <Heart className="h-4 w-4" />
+                          {language === 'ar' ? 'تبرع الآن' : 'Donate Now'}
+                        </Link>
+                      </Button>
+                    </CardFooter>
                   </Card>
                 );
               })}
+            </div>
 
-              {programs.length === 0 && (
-                <Card className="p-12 text-center">
+            {programs.length === 0 && (
+              <Card className="p-12 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <Layers className="h-16 w-16 text-muted-foreground/30" />
                   <p className="text-muted-foreground text-lg">
                     {language === 'ar' 
                       ? 'لا توجد برامج متاحة حالياً'
                       : 'No programs available at this time'}
                   </p>
-                </Card>
-              )}
-            </div>
+                </div>
+              </Card>
+            )}
           </div>
         </div>
       </section>

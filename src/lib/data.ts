@@ -37,44 +37,9 @@ export const faqItems = [
     },
 ];
 
-// Financial Data for Transparency Page Charts
-export const financialData = [
-    {
-        category: "Food & Water Programs",
-        amount: 850000,
-        percentage: 35,
-    },
-    {
-        category: "Medical Aid",
-        amount: 485000,
-        percentage: 20,
-    },
-    {
-        category: "Education & Child Support",
-        amount: 363750,
-        percentage: 15,
-    },
-    {
-        category: "Infrastructure & Shelter",
-        amount: 363750,
-        percentage: 15,
-    },
-    {
-        category: "Administration & Fundraising",
-        amount: 363750,
-        percentage: 15,
-    },
-];
-
 // Type exports
 export interface FAQItem {
     id: string;
     questionKey: string;
     answerKey: string;
-}
-
-export interface FinancialDataItem {
-    category: string;
-    amount: number;
-    percentage: number;
 }

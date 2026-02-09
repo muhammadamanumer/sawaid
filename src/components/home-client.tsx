@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { CampaignCard } from "@/components/campaign-card";
-import type { PathDocument, ProgramDocument, CampaignDocument } from "@/types/appwrite";
+import type { PathDocument, ProgramDocument, CampaignDocument, PostDocument } from "@/types/appwrite";
 import {
     ArrowRight,
     Heart,
@@ -44,12 +44,13 @@ interface HomeClientProps {
         totalCampaigns: number;
         totalPrograms: number;
         totalRaised: number;
-        beneficiariesHelped: number;
-        volunteersActive: number;
+        totalDonors: number;
+        totalVolunteers: number;
     };
+    posts: PostDocument[];
 }
 
-export function HomeClient({ paths, programs, campaigns, stats }: HomeClientProps) {
+export function HomeClient({ paths, programs, campaigns, stats, posts }: HomeClientProps) {
     const { t, language } = useTranslation();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [showVideo, setShowVideo] = useState(false);
@@ -174,38 +175,54 @@ export function HomeClient({ paths, programs, campaigns, stats }: HomeClientProp
                                 ? 'إنجازاتنا في خدمة المجتمعات حول العالم'
                                 : 'Making a real difference in communities around the world'}
                         </p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                            <div className="group p-8 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-200 hover:-translate-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                            <div className="group p-6 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-200 hover:-translate-y-2">
                                 <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                                    <TrendingUp className="h-12 w-12 text-primary" />
+                                    <TrendingUp className="h-10 w-10 text-primary" />
                                 </div>
-                                <p className="text-5xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
-                                    QAR {(stats.totalRaised / 1000000).toFixed(1)}M+
+                                <p className="text-4xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
+                                    {stats.totalRaised > 1000000 
+                                        ? `${(stats.totalRaised / 1000000).toFixed(1)}M+`
+                                        : stats.totalRaised > 1000 
+                                            ? `${(stats.totalRaised / 1000).toFixed(0)}K+`
+                                            : stats.totalRaised.toLocaleString()}
                                 </p>
-                                <p className="text-muted-foreground mt-3 font-medium">
+                                <p className="text-sm text-muted-foreground">QAR</p>
+                                <p className="text-muted-foreground mt-2 font-medium">
                                     {t("home.fundsRaised")}
                                 </p>
                             </div>
-                            <div className="group p-8 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-300 hover:-translate-y-2">
+                            <div className="group p-6 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-300 hover:-translate-y-2">
                                 <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                                    <Users className="h-12 w-12 text-primary" />
+                                    <Heart className="h-10 w-10 text-primary" />
                                 </div>
-                                <p className="text-5xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
-                                    {stats.beneficiariesHelped.toLocaleString()}+
+                                <p className="text-4xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
+                                    {stats.totalDonors.toLocaleString()}+
                                 </p>
-                                <p className="text-muted-foreground mt-3 font-medium">
-                                    {t("home.peopleHelped")}
+                                <p className="text-muted-foreground mt-2 font-medium">
+                                    {language === 'ar' ? 'المتبرعون' : 'Donors'}
                                 </p>
                             </div>
-                            <div className="group p-8 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-400 hover:-translate-y-2">
+                            <div className="group p-6 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-400 hover:-translate-y-2">
                                 <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                                    <Heart className="h-12 w-12 text-primary" />
+                                    <Users className="h-10 w-10 text-primary" />
                                 </div>
-                                <p className="text-5xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
-                                    {stats.volunteersActive.toLocaleString()}+
+                                <p className="text-4xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
+                                    {stats.totalVolunteers.toLocaleString()}+
                                 </p>
-                                <p className="text-muted-foreground mt-3 font-medium">
+                                <p className="text-muted-foreground mt-2 font-medium">
                                     {t("home.volunteers")}
+                                </p>
+                            </div>
+                            <div className="group p-6 bg-background/80 backdrop-blur-sm rounded-2xl shadow-modern-lg hover:shadow-modern-xl transition-all duration-500 border border-border/50 hover:border-primary/30 animate-fadeInUp animation-delay-500 hover:-translate-y-2">
+                                <div className="inline-flex p-4 bg-gradient-to-br from-primary-lightest to-primary-lighter rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                                    <TrendingUp className="h-10 w-10 text-primary" />
+                                </div>
+                                <p className="text-4xl font-bold mt-2 bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-light">
+                                    {stats.totalCampaigns}
+                                </p>
+                                <p className="text-muted-foreground mt-2 font-medium">
+                                    {language === 'ar' ? 'الحملات النشطة' : 'Active Campaigns'}
                                 </p>
                             </div>
                         </div>
@@ -369,75 +386,94 @@ export function HomeClient({ paths, programs, campaigns, stats }: HomeClientProp
                     </div>
                 </section>
 
-                {/* News & Challenges Section - Footer Area */}
-                <section className="py-20 bg-gradient-to-br from-muted via-background to-muted">
-                    <div className="container mx-auto px-4 md:px-6">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4 animate-fadeInUp">
-                                {t("home.newsAndChallenges")}
-                            </h2>
-                            <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fadeInUp animation-delay-100">
-                                {language === 'ar'
-                                    ? 'آخر الأخبار والتحديات والإنجازات من مؤسستنا'
-                                    : 'Latest news, challenges, and achievements from our foundation'}
-                            </p>
-                        </div>
+                {/* News & Updates Section */}
+                {posts.length > 0 && (
+                    <section className="py-20 bg-gradient-to-br from-muted via-background to-muted">
+                        <div className="container mx-auto px-4 md:px-6">
+                            <div className="text-center mb-16">
+                                <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4 animate-fadeInUp">
+                                    {t("home.newsAndChallenges")}
+                                </h2>
+                                <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fadeInUp animation-delay-100">
+                                    {language === 'ar'
+                                        ? 'آخر الأخبار والتحديات والإنجازات من مؤسستنا'
+                                        : 'Latest news, challenges, and achievements from our foundation'}
+                                </p>
+                            </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                            {/* Sample News Items - Replace with dynamic content later */}
-                            {[1, 2, 3].map((item, index) => (
-                                <Card
-                                    key={item}
-                                    className="hover:shadow-modern-xl transition-all duration-300 hover:-translate-y-1 animate-fadeInUp overflow-hidden"
-                                    style={{ animationDelay: `${index * 100}ms` }}
-                                >
-                                    <div className="relative h-48">
-                                        <Image
-                                            src={PlaceHolderImages[index]?.imageUrl || ""}
-                                            alt={`News ${item}`}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                    <CardHeader>
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                                            <span>{language === 'ar' ? 'الأخبار' : 'News'}</span>
-                                            <span>•</span>
-                                            <span>{language === 'ar' ? 'منذ 3 أيام' : '3 days ago'}</span>
-                                        </div>
-                                        <CardTitle className="text-xl line-clamp-2">
-                                            {language === 'ar'
-                                                ? `إنجاز جديد في مجال ${item === 1 ? 'التعليم' : item === 2 ? 'الصحة' : 'التنمية'}`
-                                                : `New Achievement in ${item === 1 ? 'Education' : item === 2 ? 'Healthcare' : 'Development'}`}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-muted-foreground text-sm line-clamp-3">
-                                            {language === 'ar'
-                                                ? 'نحن سعداء بالإعلان عن تحقيق إنجاز جديد في خدمة المجتمعات المحتاجة...'
-                                                : 'We are excited to announce a new achievement in serving communities in need...'}
-                                        </p>
-                                        <Button asChild variant="link" className="mt-4 p-0 text-primary">
-                                            <Link href="/news">
-                                                {language === 'ar' ? 'اقرأ المزيد' : 'Read More'}
-                                                <ArrowRight className="ml-2 h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                                {posts.map((post, index) => {
+                                    const title = language === 'ar' ? post.titleAr : post.titleEn;
+                                    const excerpt = language === 'ar' ? post.excerptAr : post.excerptEn;
+                                    const publishedDate = post.publishedAt 
+                                        ? new Date(post.publishedAt).toLocaleDateString(language === 'ar' ? 'ar-QA' : 'en-QA', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })
+                                        : null;
+                                    const categoryLabel = {
+                                        news: { en: 'News', ar: 'الأخبار' },
+                                        update: { en: 'Update', ar: 'تحديث' },
+                                        story: { en: 'Story', ar: 'قصة' },
+                                        challenge: { en: 'Challenge', ar: 'تحدي' },
+                                    }[post.category] || { en: post.category, ar: post.category };
 
-                        <div className="text-center mt-12 animate-fadeInUp animation-delay-400">
-                            <Button asChild variant="outline" size="lg" className="shadow-modern-md">
-                                <Link href="/news">
-                                    {language === 'ar' ? 'عرض جميع الأخبار' : 'View All News'}
-                                    <ArrowRight className="ml-2 h-5 w-5" />
-                                </Link>
-                            </Button>
+                                    return (
+                                        <Card
+                                            key={post.$id}
+                                            className="hover:shadow-modern-xl transition-all duration-300 hover:-translate-y-1 animate-fadeInUp overflow-hidden"
+                                            style={{ animationDelay: `${index * 100}ms` }}
+                                        >
+                                            <div className="relative h-48">
+                                                <Image
+                                                    src={post.coverImageUrl || PlaceHolderImages[index]?.imageUrl || "/placeholder.jpg"}
+                                                    alt={title}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+                                            <CardHeader>
+                                                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                                                    <span>{language === 'ar' ? categoryLabel.ar : categoryLabel.en}</span>
+                                                    {publishedDate && (
+                                                        <>
+                                                            <span>•</span>
+                                                            <span>{publishedDate}</span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                <CardTitle className="text-xl line-clamp-2">
+                                                    {title}
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p className="text-muted-foreground text-sm line-clamp-3">
+                                                    {excerpt || (language === 'ar' ? 'اقرأ المزيد...' : 'Read more...')}
+                                                </p>
+                                                <Button asChild variant="link" className="mt-4 p-0 text-primary">
+                                                    <Link href={`/news/${post.slug}`}>
+                                                        {language === 'ar' ? 'اقرأ المزيد' : 'Read More'}
+                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                    </Link>
+                                                </Button>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
+                            </div>
+
+                            <div className="text-center mt-12 animate-fadeInUp animation-delay-400">
+                                <Button asChild variant="outline" size="lg" className="shadow-modern-md">
+                                    <Link href="/news">
+                                        {language === 'ar' ? 'عرض جميع الأخبار' : 'View All News'}
+                                        <ArrowRight className="ml-2 h-5 w-5" />
+                                    </Link>
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                )}
             </main>
 
             {/* Video Popup Modal */}

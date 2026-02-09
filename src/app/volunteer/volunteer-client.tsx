@@ -182,7 +182,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
     };
 
     return (
-        <div>
+        <div dir={language === 'ar' ? 'rtl' : 'ltr'}>
             <section className="relative w-full h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
                 {heroImage && (
                     <Image
@@ -293,18 +293,25 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                 </CardHeader>
 
                                 <CardContent className="space-y-5">
+                                    {/* Required fields legend */}
+                                    <p className="text-sm text-muted-foreground">
+                                        <span className="text-destructive">*</span> {language === 'ar' ? 'يشير إلى الحقول المطلوبة' : 'indicates required fields'}
+                                    </p>
+
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                         {/* First Name */}
                                         <div className="space-y-2.5">
                                             <Label className="font-semibold">
-                                                {t('volunteer.formFirstNameLabel')}
+                                                {t('volunteer.formFirstNameLabel')} <span className="text-destructive">*</span>
                                             </Label>
                                             <Input
                                                 name="firstName"
                                                 value={formData.firstName}
                                                 onChange={handleChange}
-                                                placeholder="John"
+                                                placeholder={language === 'ar' ? 'الاسم الأول' : 'John'}
                                                 className="h-12 rounded-xl border-2"
+                                                required
+                                                aria-required="true"
                                             />
                                             {getError("firstName") && (
                                                 <p className="text-sm text-destructive">
@@ -316,14 +323,16 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                         {/* Last Name */}
                                         <div className="space-y-2.5">
                                             <Label className="font-semibold">
-                                                {t('volunteer.formLastNameLabel')}
+                                                {t('volunteer.formLastNameLabel')} <span className="text-destructive">*</span>
                                             </Label>
                                             <Input
                                                 name="lastName"
                                                 value={formData.lastName}
                                                 onChange={handleChange}
-                                                placeholder="Doe"
+                                                placeholder={language === 'ar' ? 'اسم العائلة' : 'Doe'}
                                                 className="h-12 rounded-xl border-2"
+                                                required
+                                                aria-required="true"
                                             />
                                             {getError("lastName") && (
                                                 <p className="text-sm text-destructive">
@@ -336,15 +345,18 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                     {/* Email */}
                                     <div className="space-y-2.5">
                                         <Label className="font-semibold">
-                                            {t('volunteer.formEmailLabel')}
+                                            {t('volunteer.formEmailLabel')} <span className="text-destructive">*</span>
                                         </Label>
                                         <Input
                                             name="email"
                                             type="email"
+                                            dir="ltr"
                                             value={formData.email}
                                             onChange={handleChange}
-                                            placeholder="john.doe@example.com"
+                                            placeholder="email@example.com"
                                             className="h-12 rounded-xl border-2"
+                                            required
+                                            aria-required="true"
                                         />
                                         {getError("email") && (
                                             <p className="text-sm text-destructive">
@@ -353,7 +365,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                         )}
                                     </div>
 
-                                    {/* phoneNumber */}
+                                    {/* Phone Number */}
                                     <div className="space-y-2.5">
                                         <Label className="font-semibold">
                                             {t('volunteer.formPhoneLabel')} <span className="text-destructive">*</span>
@@ -361,11 +373,13 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                         <Input
                                             name="phone"
                                             type="tel"
+                                            dir="ltr"
                                             value={formData.phone}
                                             onChange={handleChange}
-                                            placeholder="(123) 456-7890"
+                                            placeholder="+963 912 345 678"
                                             className="h-12 rounded-xl border-2"
                                             required
+                                            aria-required="true"
                                         />
                                         {getError("phone") && (
                                             <p className="text-sm text-destructive">
@@ -384,9 +398,10 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                             type="text"
                                             value={formData.country}
                                             onChange={handleChange}
-                                            placeholder={language === 'ar' ? 'مثال: الأردن' : 'e.g., Jordan'}
+                                            placeholder={language === 'ar' ? 'مثال: سوريا' : 'e.g., Syria'}
                                             className="h-12 rounded-xl border-2"
                                             required
+                                            aria-required="true"
                                         />
                                         {getError("country") && (
                                             <p className="text-sm text-destructive">
@@ -403,11 +418,13 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                         <Input
                                             name="dateOfBirth"
                                             type="date"
+                                            dir="ltr"
                                             value={formData.dateOfBirth}
                                             onChange={handleChange}
                                             className="h-12 rounded-xl border-2"
                                             max={new Date(new Date().setFullYear(new Date().getFullYear() - 16)).toISOString().split('T')[0]}
                                             required
+                                            aria-required="true"
                                         />
                                         {getError("dateOfBirth") && (
                                             <p className="text-sm text-destructive">
@@ -429,6 +446,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                             placeholder={language === 'ar' ? 'مثال: بكالوريوس في علوم الحاسوب' : 'e.g., Bachelor of Computer Science'}
                                             className="h-12 rounded-xl border-2"
                                             required
+                                            aria-required="true"
                                         />
                                         {getError("qualification") && (
                                             <p className="text-sm text-destructive">
@@ -450,6 +468,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                             placeholder={language === 'ar' ? 'مثال: مهندس برمجيات' : 'e.g., Software Engineer'}
                                             className="h-12 rounded-xl border-2"
                                             required
+                                            aria-required="true"
                                         />
                                         {getError("currentOccupation") && (
                                             <p className="text-sm text-destructive">
@@ -466,13 +485,15 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                         <Input
                                             name="weeklyHours"
                                             type="number"
+                                            dir="ltr"
                                             min="1"
                                             max="168"
                                             value={formData.weeklyHours || ""}
                                             onChange={handleChange}
-                                            placeholder={language === 'ar' ? 'مثال: 10' : 'e.g., 10'}
+                                            placeholder={language === 'ar' ? '10' : 'e.g., 10'}
                                             className="h-12 rounded-xl border-2"
                                             required
+                                            aria-required="true"
                                         />
                                         {getError("weeklyHours") && (
                                             <p className="text-sm text-destructive">
@@ -484,7 +505,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                     {/* Skills (Optional) */}
                                     <div className="space-y-2.5">
                                         <Label className="font-semibold">
-                                            {t('volunteer.formSkillsLabel')}
+                                            {t('volunteer.formSkillsLabel')} <span className="text-muted-foreground text-xs">({language === 'ar' ? 'اختياري' : 'Optional'})</span>
                                         </Label>
                                         <Textarea
                                             name="skills"
@@ -505,7 +526,7 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                     {/* Volunteer Experience (Optional) */}
                                     <div className="space-y-2.5">
                                         <Label className="font-semibold">
-                                            {t('volunteer.formVolunteerExperienceLabel')}
+                                            {t('volunteer.formVolunteerExperienceLabel')} <span className="text-muted-foreground text-xs">({language === 'ar' ? 'اختياري' : 'Optional'})</span>
                                         </Label>
                                         <Textarea
                                             name="volunteerExperience"
@@ -534,8 +555,9 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                             onValueChange={(value) =>
                                                 setFormData({ ...formData, positionId: value })
                                             }
+                                            required
                                         >
-                                            <SelectTrigger className="h-12 rounded-xl border-2">
+                                            <SelectTrigger className="h-12 rounded-xl border-2" aria-required="true">
                                                 <SelectValue
                                                     placeholder={
                                                         language === 'ar'
@@ -563,10 +585,10 @@ export function VolunteerClient({ positions }: VolunteerClientProps) {
                                         )}
                                     </div>
 
-                                    {/* Message */}
+                                    {/* Motivation Message (Optional) */}
                                     <div className="space-y-2.5">
                                         <Label className="font-semibold">
-                                            {t('volunteer.formMotivationLabel')}
+                                            {t('volunteer.formMotivationLabel')} <span className="text-muted-foreground text-xs">({language === 'ar' ? 'اختياري' : 'Optional'})</span>
                                         </Label>
                                         <Textarea
                                             name="message"
