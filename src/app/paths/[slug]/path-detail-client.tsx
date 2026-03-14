@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useTranslation } from "@/hooks/use-translation";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { ZakatBadge } from "@/components/shared/zakat-badge";
+import { AnimatedProgressBar } from "@/components/progress-bar";
 import {
   Collapsible,
   CollapsibleContent,
@@ -48,6 +48,12 @@ interface PathDetailClientProps {
 
 // Default fallback image when no image is available
 const DEFAULT_FALLBACK_IMAGE = '/placeholder-path.svg';
+
+type ProgramWithFunding = ProgramDocument & {
+  goalAmount?: number | null;
+  raisedAmount?: number | null;
+  currency?: string | null;
+};
 
 /**
  * Safely gets an image URL with fallback chain
@@ -290,6 +296,7 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {programs.map((program, index) => {
+                const programWithFunding = program as ProgramWithFunding;
                 const programTitle = language === 'ar' ? program.titleAr : program.titleEn;
                 const programSummary = language === 'ar' 
                   ? (program.summaryAr || '') 
@@ -297,6 +304,13 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
                 const programDescription = language === 'ar' 
                   ? (program.descriptionAr || program.summaryAr) 
                   : (program.descriptionEn || program.summaryEn);
+                const goalAmount = programWithFunding.goalAmount ?? 0;
+                const raisedAmount = programWithFunding.raisedAmount ?? 0;
+                const currency = programWithFunding.currency ?? 'QAR';
+                const hasAmountIndicators = goalAmount > 0 || raisedAmount > 0;
+                const fundingProgress = goalAmount > 0
+                  ? Math.min((raisedAmount / goalAmount) * 100, 100)
+                  : 0;
                 
                 // Safe program title for alt text
                 const safeProgramTitle = programTitle || program.titleEn || program.titleAr || 'Program';
@@ -384,6 +398,27 @@ export function PathDetailClient({ path, programs }: PathDetailClientProps) {
                           </p>
                         )}
                       </div>
+
+                      {/* Funding Indicators - Campaign Card Style */}
+                      {hasAmountIndicators && (
+                        <div className="mb-4 space-y-3">
+                          <AnimatedProgressBar value={fundingProgress} />
+                          <div className={`flex justify-between text-sm ${isRtl ? 'flex-row-reverse' : ''}`}>
+                            <div>
+                              <p className="font-bold text-base text-foreground">
+                                {currency} {raisedAmount.toLocaleString()}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{t('campaignCard.raised')}</p>
+                            </div>
+                            <div className={isRtl ? 'text-left' : 'text-right'}>
+                              <p className="font-semibold text-muted-foreground">
+                                {currency} {goalAmount.toLocaleString()}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{t('campaignCard.goal')}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Key Highlights */}
                       <div className="space-y-2 mb-4 mt-auto">

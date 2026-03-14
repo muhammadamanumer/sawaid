@@ -15,10 +15,15 @@ import { z } from "zod";
 import { useState } from "react";
 import { submitContactForm } from "@/services/contact";
 import { toast } from "@/hooks/use-toast";
+import { organizationInfo } from "@/config/organization";
 
 
 export default function ContactPage() {
   const { t } = useTranslation();
+  const phoneNumber = organizationInfo.contact.phone;
+  const whatsappNumber = organizationInfo.contact.whatsapp;
+  const phoneHref = `tel:${phoneNumber.replace(/\s+/g, "")}`;
+  const whatsappHref = `https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`;
   const contactFormSchema = z.object({
     name: z.string().min(2, "Name is required"),
     email: z.string().email("Invalid email address"),
@@ -216,7 +221,14 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.phoneSupportTitle')}</h3>
-                    <a href="tel:+97444123456" className="text-muted-foreground text-sm hover:text-primary transition-colors" dir="ltr">+963 982 369 654</a>
+                    <a
+                      href={phoneHref}
+                      className="text-muted-foreground text-sm font-medium tabular-nums hover:text-primary transition-colors inline-block [unicode-bidi:isolate]"
+                      dir="ltr"
+                      lang="en"
+                    >
+                      {phoneNumber}
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 group">
@@ -226,13 +238,14 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-foreground mb-1">{t('contact.whatsappTitle')}</h3>
                     <a
-                      href="https://wa.me/+90538707852"
+                      href={whatsappHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground text-sm hover:text-primary transition-colors"
+                      className="text-muted-foreground text-sm font-medium tabular-nums hover:text-primary transition-colors inline-block [unicode-bidi:isolate]"
                       dir="ltr"
+                      lang="en"
                     >
-                      +90 538 707 852
+                      {whatsappNumber}
                     </a>
                   </div>
                 </div>
