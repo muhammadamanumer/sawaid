@@ -24,6 +24,7 @@ export default function ContactPage() {
   const whatsappNumber = organizationInfo.contact.whatsapp;
   const phoneHref = `tel:${phoneNumber.replace(/\s+/g, "")}`;
   const whatsappHref = `https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}`;
+  const toLtrIsolate = (value: string) => `\u2066${value}\u2069`;
   const contactFormSchema = z.object({
     name: z.string().min(2, "Name is required"),
     email: z.string().email("Invalid email address"),
@@ -223,11 +224,11 @@ export default function ContactPage() {
                     <h3 className="font-bold text-foreground mb-1">{t('contact.phoneSupportTitle')}</h3>
                     <a
                       href={phoneHref}
-                      className="text-muted-foreground text-sm font-medium tabular-nums hover:text-primary transition-colors inline-block [unicode-bidi:isolate]"
+                      className="text-muted-foreground text-sm font-medium tabular-nums hover:text-primary transition-colors inline-block whitespace-nowrap text-left [direction:ltr] [unicode-bidi:bidi-override]"
                       dir="ltr"
                       lang="en"
                     >
-                      {phoneNumber}
+                      {toLtrIsolate(phoneNumber)}
                     </a>
                   </div>
                 </div>
@@ -241,11 +242,11 @@ export default function ContactPage() {
                       href={whatsappHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground text-sm font-medium tabular-nums hover:text-primary transition-colors inline-block [unicode-bidi:isolate]"
+                      className="text-muted-foreground text-sm font-medium tabular-nums hover:text-primary transition-colors inline-block whitespace-nowrap text-left [direction:ltr] [unicode-bidi:bidi-override]"
                       dir="ltr"
                       lang="en"
                     >
-                      {whatsappNumber}
+                      {toLtrIsolate(whatsappNumber)}
                     </a>
                   </div>
                 </div>
