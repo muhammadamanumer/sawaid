@@ -34,6 +34,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
   // Use bilingual title based on current language
   const title = language === 'ar' ? campaign.titleAr : campaign.titleEn;
   const description = language === 'ar' ? campaign.descriptionAr : campaign.descriptionEn;
+  const summary = language === 'ar' ? campaign.summaryAr : campaign.summaryEn;
 
   // Use cover image from Appwrite or fallback
   const coverImage = campaign.coverImageUrl || DEFAULT_COVER;
@@ -86,7 +87,7 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
           </Link>
         </CardTitle>
         <p className="text-muted-foreground text-sm flex-grow leading-relaxed mb-4 line-clamp-3">
-          {description?.substring(0, 150)}...
+          {summary}
         </p>
         <div className="mt-auto space-y-3">
           <AnimatedProgressBar value={progress} />
