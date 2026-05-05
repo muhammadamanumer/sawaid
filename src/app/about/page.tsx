@@ -146,7 +146,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
+      {/* <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent rounded-full blur-3xl"></div>
         </div>
@@ -182,10 +182,10 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Partners Section */}
-      <section className="py-20 bg-muted/30">
+      {/* <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-16 animate-fadeInUp">
             <h2 className="text-4xl md:text-5xl font-headline font-bold mb-4">{t('about.partnersTitle')}</h2>
@@ -210,7 +210,7 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Legal & Registration Section */}
       <section className="py-16 bg-gradient-to-br from-primary/5 to-accent/5">

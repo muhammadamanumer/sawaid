@@ -359,16 +359,16 @@ const translations: Record<Locale, any> = {
       valuesSubtitle: "The principles that guide everything we do",
       values: {
         compassion: {
-          title: "Compassion",
-          description: "We lead with empathy and understanding, treating every beneficiary with dignity and respect."
+          title: "Compassion and Charity",
+          description: "We lead with empathy and generosity, treating every beneficiary with dignity and respect."
         },
         transparency: {
-          title: "Transparency",
-          description: "Complete financial and operational transparency builds trust with our donors and communities we serve."
+          title: "Transparency and Credibility",
+          description: "Clear and honest reporting builds trust with our donors and the communities we serve."
         },
         collaboration: {
-          title: "Collaboration",
-          description: "We partner with local communities and global organizations to maximize our impact."
+          title: "Development and Creativity",
+          description: "We invest in innovation and continuous improvement to expand our impact."
         },
         impact: {
           title: "Sustainable Impact",
@@ -830,16 +830,16 @@ const translations: Record<Locale, any> = {
       valuesSubtitle: "المبادئ التي توجه كل ما نقوم به",
       values: {
         compassion: {
-          title: "الرحمة",
-          description: "نقود بالتعاطف والتفهم، ونعامل كل مستفيد بكرامة واحترام."
+          title: "الرحمة والإحسان",
+          description: "نقود بالتعاطف والإحسان، ونعامل كل مستفيد بكرامة واحترام."
         },
         transparency: {
-          title: "الشفافية",
-          description: "الشفافية المالية والتشغيلية الكاملة تبني الثقة مع المانحين والمجتمعات التي نخدمها."
+          title: "الشفافية والمصداقية",
+          description: "الشفافية والتقارير الصادقة تبني الثقة مع المانحين والمجتمعات التي نخدمها."
         },
         collaboration: {
-          title: "التعاون",
-          description: "نتشارك مع المجتمعات المحلية والمنظمات العالمية لتعظيم تأثيرنا."
+          title: "التطوير والإبداع",
+          description: "نستثمر في الابتكار والتحسين المستمر لتوسيع أثرنا."
         },
         impact: {
           title: "التأثير المستدام",
