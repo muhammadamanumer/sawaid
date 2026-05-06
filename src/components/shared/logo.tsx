@@ -11,7 +11,7 @@ export function Logo() {
 
   return (
     <Link href="/" className="flex items-center gap-3 group" aria-label="Sawaid Al Islah Homepage">
-      <div className="relative h-16 w-20 flex-shrink-0 bg-white ">
+      <div className="relative h-16 w-20 flex-shrink-0 bg-transparent ">
         <Image
           src="/Logo/logo-sawaid.svg"
           alt="Sawaid Al Islah Logo"

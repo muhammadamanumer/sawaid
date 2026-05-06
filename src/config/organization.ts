@@ -18,15 +18,15 @@ export const organizationInfo = {
     },
     phone: '+963 982 369 654',
     whatsapp: '+90 538 707 8528',
-    email: 'info@sawaidalislah.org', // Add if available
+    email: 'info@sawaidalislah.com',
   },
   
   // Social Media Links
   social: {
-    facebook: 'https://www.facebook.com/sawaidalislah/',
+    facebook: 'https://www.facebook.com/sawaidalislah',
     twitter: 'https://x.com/sawaidalislah',
     instagram: 'https://www.instagram.com/sawaidalislah/',
-    telegram: 'https://web.telegram.org/a/?account=2#-1003308570148',
+    telegram: 'https://t.me/sawaidalislah',
   },
   
   // Legal Information
