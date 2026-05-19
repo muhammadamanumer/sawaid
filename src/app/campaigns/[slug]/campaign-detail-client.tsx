@@ -78,7 +78,13 @@ export function CampaignDetailClient({ campaign, donors }: CampaignDetailClientP
                         {language === 'ar' ? 'عاجل' : 'Urgent'}
                       </Badge>
                     )}
-                    {campaign.zakatSupported && <ZakatBadge supported={true} />}
+                    {campaign.zakatSupported && (
+                      <ZakatBadge
+                        supported={true}
+                        showFatwaInfo={true}
+                        fatwaBarcodeSrc="/fatwa-barcode.png"
+                      />
+                    )}
                   </div>
                 </div>
               )}

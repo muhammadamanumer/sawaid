@@ -31,7 +31,6 @@ export interface SiteStats {
  */
 export async function getStats(): Promise<SiteStats> {
     try {
-        debugger
         // Parallel fetch - 4 API calls for all stats
         const [campaignsRes, programsRes, donationsRes, volunteersRes] = await Promise.all([
             tablesDB.listRows({

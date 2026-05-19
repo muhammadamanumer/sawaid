@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { DonateForm, DonateFormCampaign } from "@/components/donate-form";
+import { DonationMethods } from "@/components/donation-methods";
 import { useTranslation } from "@/hooks/use-translation";
 
 interface DonateClientProps {
@@ -34,6 +35,8 @@ export function DonateClient({ campaigns }: DonateClientProps) {
         <div className="animate-fadeInUp animation-delay-200">
           <DonateForm campaigns={campaigns} preselectedCampaignSlug={preselectedCampaign} />
         </div>
+
+        <DonationMethods />
         
         <p className="text-center text-sm text-muted-foreground mt-8 animate-fadeInUp animation-delay-300">
           {t('donate.footer')}

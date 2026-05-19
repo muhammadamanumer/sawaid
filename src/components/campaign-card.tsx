@@ -9,7 +9,7 @@ import type { CampaignDocument } from '@/types/appwrite';
 import { AnimatedProgressBar } from '@/components/progress-bar';
 import { useTranslation } from '@/hooks/use-translation';
 import { ZakatBadge } from '@/components/shared/zakat-badge';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 
 // Support both legacy and new campaign types
 type CampaignCardProps = {
@@ -60,10 +60,15 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         {/* Zakat Stamp */}
         <div className="absolute top-4 left-4">
           {campaign.zakatSupported ? (
-            <Badge className="bg-primary/95 text-primary-foreground border-0 shadow-modern-md backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5">
-              <CheckCircle2 className="h-4 w-4" />
-              <span className="text-xs font-semibold">{t('campaignCard.zakatSupported')}</span>
-            </Badge>
+            <ZakatBadge
+              supported={true}
+              showFatwaInfo={true}
+              fatwaBarcodeSrc="/fatwa-barcode.png"
+              labelOverride={t('campaignCard.zakatSupported')}
+              variant="solid"
+              size="card"
+              icon="check"
+            />
           ) : (
             <Badge variant="destructive" className="bg-destructive/95 backdrop-blur-sm border-0 shadow-modern-md flex items-center gap-1.5 px-3 py-1.5">
               <XCircle className="h-4 w-4" />

@@ -1,16 +1,23 @@
 "use client";
 
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 interface ZakatBadgeProps {
   supported: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "card";
   showIcon?: boolean;
-  variant?: "default" | "outline" | "minimal";
+  variant?: "default" | "outline" | "minimal" | "solid";
+  icon?: "sparkles" | "check";
+  labelOverride?: string;
   className?: string;
+  showFatwaInfo?: boolean;
+  fatwaBarcodeSrc?: string;
+  fatwaBarcodeAlt?: string;
 }
 
 /**
@@ -24,7 +31,12 @@ export function ZakatBadge({
   size = "md",
   showIcon = true,
   variant = "default",
+  icon = "sparkles",
+  labelOverride,
   className,
+  showFatwaInfo = false,
+  fatwaBarcodeSrc,
+  fatwaBarcodeAlt,
 }: ZakatBadgeProps) {
   const { language } = useTranslation();
   const isArabic = language === "ar";
@@ -33,12 +45,14 @@ export function ZakatBadge({
     sm: "text-xs px-2 py-0.5",
     md: "text-sm px-2.5 py-0.5",
     lg: "text-base px-3 py-1",
+    card: "text-xs px-3 py-1.5",
   };
 
   const iconSizes = {
     sm: "h-3 w-3",
     md: "h-3.5 w-3.5",
     lg: "h-4 w-4",
+    card: "h-4 w-4",
   };
 
   const variantClasses = {
@@ -51,6 +65,9 @@ export function ZakatBadge({
     minimal: supported
       ? "bg-green-500/5 text-green-600 border-transparent"
       : "bg-red-500/5 text-red-600 border-transparent",
+    solid: supported
+      ? "bg-primary/95 text-primary-foreground border-0 shadow-modern-md backdrop-blur-sm"
+      : "bg-destructive/95 text-destructive-foreground border-0 shadow-modern-md backdrop-blur-sm",
   };
 
   const labels = {
@@ -64,19 +81,30 @@ export function ZakatBadge({
     },
   };
 
-  const label = supported
+  const label = labelOverride || (supported
     ? labels.supported[isArabic ? "ar" : "en"]
-    : labels.notSupported[isArabic ? "ar" : "en"];
+    : labels.notSupported[isArabic ? "ar" : "en"]);
 
-  const Icon = supported ? (showIcon ? Sparkles : CheckCircle2) : XCircle;
+  const supportedIcon = icon === "check" ? CheckCircle2 : Sparkles;
+  const Icon = supported ? supportedIcon : XCircle;
 
-  return (
+  const fatwaText = isArabic
+    ? "يمكن التبرع من أموال الزكاة تحت بند ﴿وَفِــي سَــبِيلِ اللهِ﴾، وذلك وفقاً لما جاء في قرار مجلس المجمع الفقهي الإسلامي، في دورته الثامنة المنعقدة بمكة المكرمة فيما بين 27 ربيع الآخر 1405هــ و 8 جمادى الأولى 1405 هـــ ، وجاء فيه:\nفإنّ المجلس يقرر بالأكثرية المطلقة دخول الدعوة إلى الله تعالى، وما يعين عليها، ويدعم أعمالها، في معنى ﴿وَفِــي سَــبِيلِ اللهِ﴾ في الآية الكريمة."
+    : "Zakat funds may be donated under the category of \"Fi Sabilillah\" (in the cause of Allah),\nin accordance with the ruling issued by the Islamic Fiqh Council during its eighth session, held in Makkah between 27 Rabi al-Thani 1405 AH and 8 Jumada al-Ula 1405 AH, The ruling stated:\nThe Council, by absolute majority, has decided that da'wah (calling people to Allah), along with the means that support and strengthen its work, falls within the meaning of \"Fi Sabililah\" - (For the Cause of Allah) mentioned in the noble verse.";
+
+  const showFatwaTooltip = supported && showFatwaInfo;
+  const fatwaBarcodeAltText = fatwaBarcodeAlt || (isArabic ? "باركود الفتوى" : "Fatwa barcode");
+
+  const badge = (
     <Badge
       variant="outline"
+      tabIndex={showFatwaTooltip ? 0 : undefined}
+      aria-label={label}
       className={cn(
         "transition-colors font-medium inline-flex items-center gap-1",
         sizeClasses[size],
         variantClasses[variant],
+        showFatwaTooltip ? "cursor-help" : "",
         className
       )}
     >
@@ -85,6 +113,42 @@ export function ZakatBadge({
       )}
       <span>{label}</span>
     </Badge>
+  );
+
+  if (!showFatwaTooltip) {
+    return badge;
+  }
+
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>{badge}</TooltipTrigger>
+        <TooltipContent
+          side="bottom"
+          align="center"
+          sideOffset={10}
+          collisionPadding={12}
+          className="max-w-[min(420px,calc(100vw-24px))] max-h-[70vh] overflow-y-auto rounded-xl border border-border/60 bg-popover/95 p-4 text-sm leading-relaxed shadow-modern-xl backdrop-blur-md"
+        >
+          <div className={cn("space-y-4", isArabic ? "text-right" : "text-left")}>
+            <p className="text-muted-foreground whitespace-pre-line" dir={isArabic ? "rtl" : "ltr"}>
+              {fatwaText}
+            </p>
+            {fatwaBarcodeSrc && (
+              <div className="pt-3 border-t border-border/60">
+                <Image
+                  src={fatwaBarcodeSrc}
+                  alt={fatwaBarcodeAltText}
+                  width={260}
+                  height={120}
+                  className="mx-auto h-auto w-full max-w-[260px] rounded-md bg-background/70 p-2 shadow-modern"
+                />
+              </div>
+            )}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
